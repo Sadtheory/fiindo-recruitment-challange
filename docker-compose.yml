@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: fiindo_challenge
+    volumes:
+      - .:/app                    # Synchronisiert lokale Dateien
+      - ./data:/app/data          # Datenbank-Verzeichnis
+    environment:
+      - PYTHONPATH=/app          # Python findet Module
+      - PYTHONUNBUFFERED=1       # Sofortige Log-Ausgabe
+    working_dir: /app
+    command: python main.py      # Startbefehl
