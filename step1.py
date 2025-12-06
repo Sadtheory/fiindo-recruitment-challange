@@ -77,6 +77,7 @@ def fetch_all_available_data():
 
         # Try each endpoint
         endpoints = [
+            ("eod", f"/api/v1/eod/{symbol}"),
             ("income_statement", f"/api/v1/financials/{symbol}/income_statement"),
             ("balance_sheet_statement", f"/api/v1/financials/{symbol}/balance_sheet_statement"),
             ("cash_flow_statement", f"/api/v1/financials/{symbol}/cash_flow_statement")

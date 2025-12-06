@@ -5,19 +5,22 @@
     "JPM.US",
     "NVDA.US"
   ],
-  "collection_date": "20251206_182246",
+  "collection_date": "20251206_193445",
   "data_structure": {
     "AAPL.US": [
+      "eod",
       "income_statement",
       "balance_sheet_statement",
       "cash_flow_statement"
     ],
     "JPM.US": [
+      "eod",
       "income_statement",
       "balance_sheet_statement",
       "cash_flow_statement"
     ],
     "NVDA.US": [
+      "eod",
       "income_statement",
       "balance_sheet_statement",
       "cash_flow_statement"
