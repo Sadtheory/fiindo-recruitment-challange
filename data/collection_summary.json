@@ -1,0 +1,26 @@
+{
+  "total_symbols": 894,
+  "collected_symbols": [
+    "AAPL.US",
+    "JPM.US",
+    "NVDA.US"
+  ],
+  "collection_date": "20251206_182246",
+  "data_structure": {
+    "AAPL.US": [
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "JPM.US": [
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NVDA.US": [
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ]
+  }
+}
