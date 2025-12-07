@@ -1,4 +1,4 @@
-# step2_realistic_calculations.py
+# step2_calculations.py
 
 import json
 from pathlib import Path
@@ -28,246 +28,231 @@ class IndustryAggregation:
     ticker_count: int = 0
 
 
-class RealisticCalculator:
-    """Calculator mit realistischen Korrekturen basierend auf Symbol"""
-
-    # Bekannte reale Werte (für Korrektur)
-    REALISTIC_VALUES = {
-        "AAPL.US": {
-            "expected_price": 190.0,  # USD
-            "expected_revenue": 400_000_000_000,  # ~400B
-            "expected_net_income": 100_000_000_000,  # ~100B
-            "price_correction": 6.43,  # 190 / 29.57
-            "revenue_correction": 208.5,  # 400B / 1.918B
-            "income_correction": 1634.0  # 100B / 61.2M
-        },
-        "JPM.US": {
-            "expected_price": 180.0,
-            "expected_revenue": 150_000_000_000,
-            "expected_net_income": 50_000_000_000,
-            "price_correction": 2.69,  # 180 / 67
-            "revenue_correction": None,  # Revenue ist 0 in Daten
-            "income_correction": 128.1  # 50B / 390M
-        },
-        "NVDA.US": {
-            "expected_price": 130.0,
-            "expected_revenue": 60_000_000_000,
-            "expected_net_income": 30_000_000_000,
-            "price_correction": 157.1,  # 130 / 0.82775
-            "revenue_correction": 379.3,  # 60B / 158M
-            "income_correction": 7317.1  # 30B / 4.1M
-        }
-    }
+class DataCalculator:
+    """Calculator für die spezifizierten Berechnungen"""
 
     @staticmethod
-    def get_realistic_price(symbol: str, raw_price: float) -> float:
-        """Gibt realistischen Preis zurück"""
-        if symbol in RealisticCalculator.REALISTIC_VALUES:
-            correction = RealisticCalculator.REALISTIC_VALUES[symbol].get("price_correction")
-            if correction:
-                realistic_price = raw_price * correction
-                print(f"      Price: {raw_price} → {realistic_price:.2f} (×{correction:.1f})")
-                return realistic_price
-
-        # Fallback: Wenn kein Korrekturfaktor, verwende raw
-        return raw_price
-
-    @staticmethod
-    def get_realistic_revenue(symbol: str, raw_revenue: Optional[float]) -> Optional[float]:
-        """Gibt realistisches Revenue zurück"""
-        if raw_revenue is None:
-            return None
-
-        if symbol in RealisticCalculator.REALISTIC_VALUES:
-            correction = RealisticCalculator.REALISTIC_VALUES[symbol].get("revenue_correction")
-            if correction:
-                realistic_revenue = raw_revenue * correction
-                print(f"      Revenue: {raw_revenue:,.0f} → {realistic_revenue:,.0f} (×{correction:.1f})")
-                return realistic_revenue
-
-        return raw_revenue
-
-    @staticmethod
-    def get_realistic_net_income(symbol: str, raw_income: Optional[float]) -> Optional[float]:
-        """Gibt realistisches Net Income zurück"""
-        if raw_income is None:
-            return None
-
-        if symbol in RealisticCalculator.REALISTIC_VALUES:
-            correction = RealisticCalculator.REALISTIC_VALUES[symbol].get("income_correction")
-            if correction:
-                realistic_income = raw_income * correction
-                print(f"      Net Income: {raw_income:,.0f} → {realistic_income:,.0f} (×{correction:.1f})")
-                return realistic_income
-
-        return raw_income
-
-    @staticmethod
-    def extract_raw_price(eod_data: Dict) -> Optional[float]:
-        """Extrahiert Roh-Preis aus EOD Daten"""
+    def extract_latest_price(eod_data: Dict) -> Optional[float]:
+        """Extrahiert NEUESTEN Preis aus EOD Daten (letzter Eintrag in Liste)"""
         if not eod_data:
             return None
 
-        # Preis ist in stockprice.data[0].close
+        # Preis ist in stockprice.data[LAST].close
         if "stockprice" in eod_data:
             stockprice = eod_data["stockprice"]
             if isinstance(stockprice, dict) and "data" in stockprice:
                 data = stockprice["data"]
                 if isinstance(data, list) and len(data) > 0:
-                    first_item = data[0]
-                    if isinstance(first_item, dict) and "close" in first_item:
-                        return float(first_item["close"])
+                    # Nimm den LETZTEN (neuesten) Eintrag
+                    last_item = data[-1]
+                    if isinstance(last_item, dict) and "close" in last_item:
+                        return float(last_item["close"])
 
         return None
 
     @staticmethod
-    def extract_raw_financials(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Roh-Revenue und Net Income"""
+    def extract_last_quarter_financials(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Revenue und Net Income für das letzte Quartal (data[0])"""
         revenue = None
         net_income = None
 
         if not income_data or "fundamentals" not in income_data:
             return revenue, net_income
 
-        def search_values(data):
+        def search_last_quarter_values(data):
             nonlocal revenue, net_income
 
             if isinstance(data, dict):
-                # Revenue
+                # In financials.income_statement.data suchen (data[0] = letztes Quartal)
+                if "financials" in data and "income_statement" in data["financials"]:
+                    income_stmt = data["financials"]["income_statement"]
+                    if "data" in income_stmt and isinstance(income_stmt["data"], list) and len(income_stmt["data"]) > 0:
+                        # LETZTES Quartal ist data[0]
+                        last_quarter = income_stmt["data"][0]
+
+                        if revenue is None and "revenue" in last_quarter and isinstance(last_quarter["revenue"],
+                                                                                        (int, float)):
+                            revenue = float(last_quarter["revenue"])
+
+                        if net_income is None and "netIncome" in last_quarter and isinstance(last_quarter["netIncome"],
+                                                                                             (int, float)):
+                            net_income = float(last_quarter["netIncome"])
+
+                # Allgemeine Suche als Fallback
                 if revenue is None and "revenue" in data and isinstance(data["revenue"], (int, float)):
                     revenue = float(data["revenue"])
 
-                # Net Income
                 if net_income is None and "netIncome" in data and isinstance(data["netIncome"], (int, float)):
                     net_income = float(data["netIncome"])
-
-                # In financials.income_statement.data suchen
-                if "financials" in data and "income_statement" in data["financials"]:
-                    income_stmt = data["financials"]["income_statement"]
-                    if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        for quarter_data in income_stmt["data"][:1]:  # Nur aktuelles Quartal
-                            if revenue is None and "revenue" in quarter_data and isinstance(quarter_data["revenue"],
-                                                                                            (int, float)):
-                                revenue = float(quarter_data["revenue"])
-                            if net_income is None and "netIncome" in quarter_data and isinstance(
-                                    quarter_data["netIncome"], (int, float)):
-                                net_income = float(quarter_data["netIncome"])
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        search_values(value)
+                        search_last_quarter_values(value)
 
             elif isinstance(data, list):
                 for item in data:
-                    search_values(item)
+                    search_last_quarter_values(item)
 
-        search_values(income_data["fundamentals"])
+        search_last_quarter_values(income_data["fundamentals"])
         return revenue, net_income
 
     @staticmethod
-    def extract_historical_revenue(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Revenue für aktuelles und vorheriges Quartal"""
-        revenue_q2 = None  # Aktuelles Quartal
-        revenue_q1 = None  # Vorheriges Quartal
+    def extract_revenue_for_growth_calculation(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Revenue für aktuelles (Q-2) und vorheriges Quartal (Q-1) für Growth-Berechnung"""
+        revenue_q2 = None  # Aktuelles Quartal (data[0])
+        revenue_q1 = None  # Vorheriges Quartal (data[1])
 
         if not income_data or "fundamentals" not in income_data:
             return revenue_q2, revenue_q1
 
         fundamentals = income_data["fundamentals"]
 
-        def search_historical_revenue(data, period=0):
+        def search_quarterly_revenue(data):
+            nonlocal revenue_q2, revenue_q1
+
             if isinstance(data, dict):
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        if period < len(income_stmt["data"]):
-                            quarter_data = income_stmt["data"][period]
-                            if "revenue" in quarter_data and isinstance(quarter_data["revenue"], (int, float)):
-                                return float(quarter_data["revenue"])
+                        # Q-2: Letztes Quartal (data[0])
+                        if len(income_stmt["data"]) > 0 and revenue_q2 is None:
+                            q2_data = income_stmt["data"][0]
+                            if "revenue" in q2_data and isinstance(q2_data["revenue"], (int, float)):
+                                revenue_q2 = float(q2_data["revenue"])
+
+                        # Q-1: Vorletztes Quartal (data[1])
+                        if len(income_stmt["data"]) > 1 and revenue_q1 is None:
+                            q1_data = income_stmt["data"][1]
+                            if "revenue" in q1_data and isinstance(q1_data["revenue"], (int, float)):
+                                revenue_q1 = float(q1_data["revenue"])
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        result = search_historical_revenue(value, period)
-                        if result is not None:
-                            return result
+                        search_quarterly_revenue(value)
 
             elif isinstance(data, list):
                 for item in data:
-                    result = search_historical_revenue(item, period)
-                    if result is not None:
-                        return result
+                    search_quarterly_revenue(item)
 
-            return None
-
-        revenue_q2 = search_historical_revenue(fundamentals, 0)
-        revenue_q1 = search_historical_revenue(fundamentals, 1)
-
+        search_quarterly_revenue(fundamentals)
         return revenue_q2, revenue_q1
 
     @staticmethod
-    def extract_debt_equity(balance_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Debt und Equity"""
+    def extract_last_year_debt_equity(balance_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Debt und Equity für das letzte Jahr (data[0])"""
         debt = None
         equity = None
 
         if not balance_data or "fundamentals" not in balance_data:
             return debt, equity
 
-        def search_debt_equity(data):
+        def search_last_year_values(data):
             nonlocal debt, equity
 
             if isinstance(data, dict):
-                # Debt
+                # In financials.balance_sheet_statement.data suchen (data[0] = letztes Jahr)
+                if "financials" in data and "balance_sheet_statement" in data["financials"]:
+                    balance_stmt = data["financials"]["balance_sheet_statement"]
+                    if "data" in balance_stmt and isinstance(balance_stmt["data"], list) and len(
+                            balance_stmt["data"]) > 0:
+                        # LETZTES Jahr ist data[0]
+                        last_year = balance_stmt["data"][0]
+
+                        if debt is None and "totalDebt" in last_year and isinstance(last_year["totalDebt"],
+                                                                                    (int, float)):
+                            debt = float(last_year["totalDebt"])
+
+                        if equity is None and "totalEquity" in last_year and isinstance(last_year["totalEquity"],
+                                                                                        (int, float)):
+                            equity = float(last_year["totalEquity"])
+
+                # Allgemeine Suche als Fallback
                 if debt is None and "totalDebt" in data and isinstance(data["totalDebt"], (int, float)):
                     debt = float(data["totalDebt"])
 
-                # Equity
                 if equity is None and "totalEquity" in data and isinstance(data["totalEquity"], (int, float)):
                     equity = float(data["totalEquity"])
-
-                # In financials.balance_sheet_statement.data suchen
-                if "financials" in data and "balance_sheet_statement" in data["financials"]:
-                    balance_stmt = data["financials"]["balance_sheet_statement"]
-                    if "data" in balance_stmt and isinstance(balance_stmt["data"], list):
-                        for quarter_data in balance_stmt["data"][:1]:
-                            if debt is None and "totalDebt" in quarter_data and isinstance(quarter_data["totalDebt"],
-                                                                                           (int, float)):
-                                debt = float(quarter_data["totalDebt"])
-                            if equity is None and "totalEquity" in quarter_data and isinstance(
-                                    quarter_data["totalEquity"], (int, float)):
-                                equity = float(quarter_data["totalEquity"])
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        search_debt_equity(value)
+                        search_last_year_values(value)
 
             elif isinstance(data, list):
                 for item in data:
-                    search_debt_equity(item)
+                    search_last_year_values(item)
 
-        search_debt_equity(balance_data["fundamentals"])
+        search_last_year_values(balance_data["fundamentals"])
         return debt, equity
 
     @staticmethod
+    def extract_net_income_ttm(income_data: Dict) -> Optional[float]:
+        """Extrahiert Net Income für die letzten 12 Monate (TTM)"""
+        if not income_data or "fundamentals" not in income_data:
+            return None
+
+        # Versuche TTM direkt zu finden
+        def search_ttm_income(data):
+            if isinstance(data, dict):
+                # Suche nach TTM oder letzten 4 Quartalen
+                if "netIncome" in data and isinstance(data["netIncome"], (int, float)):
+                    # Falls es ein TTM Wert ist
+                    return float(data["netIncome"])
+
+                # Suche in income statement data und summiere die letzten 4 Quartale
+                if "financials" in data and "income_statement" in data["financials"]:
+                    income_stmt = data["financials"]["income_statement"]
+                    if "data" in income_stmt and isinstance(income_stmt["data"], list):
+                        # Summiere Net Income der letzten 4 Quartale
+                        ttm_income = 0
+                        quarters_counted = 0
+                        for quarter_data in income_stmt["data"][:4]:  # Letzte 4 Quartale
+                            if "netIncome" in quarter_data and isinstance(quarter_data["netIncome"], (int, float)):
+                                ttm_income += float(quarter_data["netIncome"])
+                                quarters_counted += 1
+
+                        if quarters_counted > 0:
+                            return ttm_income
+
+                # Rekursiv suchen
+                for value in data.values():
+                    if isinstance(value, (dict, list)):
+                        result = search_ttm_income(value)
+                        if result is not None:
+                            return result
+
+            elif isinstance(data, list):
+                for item in data:
+                    result = search_ttm_income(item)
+                    if result is not None:
+                        return result
+
+            return None
+
+        return search_ttm_income(income_data["fundamentals"])
+
+    @staticmethod
     def determine_industry(symbol: str) -> str:
-        """Bestimmt Industrie"""
-        if "JPM" in symbol:
+        """Bestimmt Industrie basierend auf Symbol"""
+        # Erweiterte Industrieerkennung
+        symbol_upper = symbol.upper()
+
+        if any(bank in symbol_upper for bank in ["JPM", "BAC", "C", "WFC", "GS", "MS", "DB", "UBS"]):
             return "Banks - Diversified"
-        elif "AAPL" in symbol or "NVDA" in symbol:
+        elif any(tech in symbol_upper for tech in ["AAPL", "NVDA", "AMD", "INTC", "QCOM", "GOOGL", "GOOG", "META"]):
             return "Consumer Electronics"
-        elif "MSFT" in symbol:
+        elif any(software in symbol_upper for software in ["MSFT", "ORCL", "SAP", "CRM", "ADBE", "INTU", "NOW"]):
             return "Software - Application"
         else:
             return "Unknown"
 
 
 def main():
-    """Hauptfunktion mit realistischen Berechnungen"""
+    """Hauptfunktion für Berechnungen gemäß Spezifikation"""
     print("=" * 80)
-    print("STEP 2: REALISTIC CALCULATIONS WITH UNIT CORRECTIONS")
+    print("STEP 2: DATA CALCULATIONS")
     print("=" * 80)
 
     # Daten laden
@@ -278,11 +263,11 @@ def main():
 
     print(f"📊 Analysiere {len(raw_data)} Symbole")
 
-    calculator = RealisticCalculator()
+    calculator = DataCalculator()
     all_stats = []
 
     print("\n" + "=" * 80)
-    print("REALISTIC CALCULATIONS WITH CORRECTIONS")
+    print("CALCULATIONS PER TICKER")
     print("=" * 80)
 
     for symbol, symbol_data in raw_data.items():
@@ -292,62 +277,87 @@ def main():
         industry = calculator.determine_industry(symbol)
         print(f"   Industry: {industry}")
 
-        # 1. Price extrahieren und korrigieren
-        raw_price = None
+        # 1. LATEST Price extrahieren
+        latest_price = None
         if "eod" in symbol_data:
-            raw_price = calculator.extract_raw_price(symbol_data["eod"])
+            latest_price = calculator.extract_latest_price(symbol_data["eod"])
 
-        realistic_price = None
-        if raw_price is not None:
-            realistic_price = calculator.get_realistic_price(symbol, raw_price)
+        if latest_price is not None:
+            print(f"   Latest Price: ${latest_price:.2f}")
 
-        # 2. Financials extrahieren und korrigieren
-        raw_revenue, raw_net_income = None, None
+        # 2. LAST QUARTER Financials extrahieren
+        last_quarter_revenue, last_quarter_net_income = None, None
         if "income_statement" in symbol_data:
-            raw_revenue, raw_net_income = calculator.extract_raw_financials(symbol_data["income_statement"])
+            last_quarter_revenue, last_quarter_net_income = calculator.extract_last_quarter_financials(
+                symbol_data["income_statement"])
 
-        realistic_revenue = calculator.get_realistic_revenue(symbol, raw_revenue)
-        realistic_net_income = calculator.get_realistic_net_income(symbol, raw_net_income)
+        if last_quarter_revenue is not None:
+            print(f"   Last Quarter Revenue: ${last_quarter_revenue:,.0f}")
+        if last_quarter_net_income is not None:
+            print(f"   Last Quarter Net Income: ${last_quarter_net_income:,.0f}")
 
-        # 3. Historical Revenue für Growth berechnen
-        revenue_q2_raw, revenue_q1_raw = None, None
+        # 3. TTM Net Income extrahieren
+        net_income_ttm = None
         if "income_statement" in symbol_data:
-            revenue_q2_raw, revenue_q1_raw = calculator.extract_historical_revenue(symbol_data["income_statement"])
+            net_income_ttm = calculator.extract_net_income_ttm(symbol_data["income_statement"])
 
-        revenue_q2 = calculator.get_realistic_revenue(symbol, revenue_q2_raw)
-        revenue_q1 = calculator.get_realistic_revenue(symbol, revenue_q1_raw)
+        if net_income_ttm is not None:
+            print(f"   Net Income TTM: ${net_income_ttm:,.0f}")
 
-        # 4. Debt & Equity
+        # 4. Revenue Growth berechnen (Q-1 vs Q-2)
+        revenue_q2, revenue_q1 = None, None
+        if "income_statement" in symbol_data:
+            revenue_q2, revenue_q1 = calculator.extract_revenue_for_growth_calculation(symbol_data["income_statement"])
+
+        if revenue_q1 is not None:
+            print(f"   Previous Quarter Revenue (Q-1): ${revenue_q1:,.0f}")
+        if revenue_q2 is not None:
+            print(f"   Current Quarter Revenue (Q-2): ${revenue_q2:,.0f}")
+
+        # 5. LAST YEAR Debt & Equity für Debt Ratio
         debt, equity = None, None
         if "balance_sheet_statement" in symbol_data:
-            debt, equity = calculator.extract_debt_equity(symbol_data["balance_sheet_statement"])
+            debt, equity = calculator.extract_last_year_debt_equity(symbol_data["balance_sheet_statement"])
 
-        # Berechnungen
-        # PE Ratio
+        if debt is not None:
+            print(f"   Total Debt (last year): ${debt:,.0f}")
+        if equity is not None:
+            print(f"   Total Equity (last year): ${equity:,.0f}")
+
+        # Berechnungen nach Spezifikation
+        # 1. PE Ratio: Price-to-Earnings ratio from last quarter
         pe_ratio = None
-        if realistic_price and realistic_net_income and realistic_net_income != 0:
-            pe_ratio = realistic_price / realistic_net_income
+        if latest_price and last_quarter_net_income and last_quarter_net_income != 0:
+            pe_ratio = latest_price / last_quarter_net_income
+            print(f"   PE Ratio: ${latest_price:.2f} / ${last_quarter_net_income:,.0f} = {pe_ratio:.2f}")
 
-        # Revenue Growth
+        # 2. Revenue Growth: Quarter-over-quarter revenue growth (Q-1 vs Q-2)
         revenue_growth = None
         if revenue_q1 and revenue_q2 and revenue_q1 != 0:
             revenue_growth = ((revenue_q2 - revenue_q1) / revenue_q1) * 100
+            print(
+                f"   Revenue Growth: (${revenue_q2:,.0f} - ${revenue_q1:,.0f}) / ${revenue_q1:,.0f} × 100 = {revenue_growth:.2f}%")
 
-        # Debt Ratio
+        # 3. NetIncomeTTM: Trailing twelve months net income (bereits extrahiert)
+
+        # 4. DebtRatio: Debt-to-equity ratio from last year
         debt_ratio = None
         if debt and equity and equity != 0:
             debt_ratio = debt / equity
+            print(f"   Debt Ratio: ${debt:,.0f} / ${equity:,.0f} = {debt_ratio:.4f}")
 
-        print(f"\n   📊 FINAL STATISTICS:")
-        print(f"     • Realistic Price: ${realistic_price:,.2f}" if realistic_price else "     • Price: Not available")
+        print(f"\n   📊 FINAL STATISTICS FOR {symbol}:")
+        print(f"     • Latest Price: ${latest_price:,.2f}" if latest_price else "     • Price: Not available")
         print(
-            f"     • Realistic Revenue: ${realistic_revenue:,.0f}" if realistic_revenue else "     • Revenue: Not available")
+            f"     • Last Quarter Revenue: ${last_quarter_revenue:,.0f}" if last_quarter_revenue else "     • Revenue: Not available")
         print(
-            f"     • Realistic Net Income: ${realistic_net_income:,.0f}" if realistic_net_income else "     • Net Income: Not available")
-        print(f"     • PE Ratio: {pe_ratio:.2f}" if pe_ratio else "     • PE Ratio: Not available")
+            f"     • PE Ratio (based on last quarter): {pe_ratio:.2f}" if pe_ratio else "     • PE Ratio: Not available")
         print(
-            f"     • Revenue Growth: {revenue_growth:.2f}%" if revenue_growth is not None else "     • Revenue Growth: Not available")
-        print(f"     • Debt Ratio: {debt_ratio:.4f}" if debt_ratio else "     • Debt Ratio: Not available")
+            f"     • Revenue Growth (QoQ): {revenue_growth:.2f}%" if revenue_growth is not None else "     • Revenue Growth: Not available")
+        print(
+            f"     • Net Income TTM: ${net_income_ttm:,.0f}" if net_income_ttm else "     • Net Income TTM: Not available")
+        print(
+            f"     • Debt Ratio (from last year): {debt_ratio:.4f}" if debt_ratio else "     • Debt Ratio: Not available")
 
         # TickerStatistics erstellen
         stats = TickerStatistics(
@@ -355,20 +365,37 @@ def main():
             industry=industry,
             pe_ratio=pe_ratio,
             revenue_growth=revenue_growth,
-            net_income_ttm=realistic_net_income,
+            net_income_ttm=net_income_ttm,
             debt_ratio=debt_ratio,
-            revenue=realistic_revenue
+            revenue=last_quarter_revenue
         )
 
         all_stats.append(stats)
 
-    # Industry Aggregation
+    # Nur Symbole aus den 3 gewünschten Industrien filtern
     print("\n" + "=" * 80)
-    print("INDUSTRY AGGREGATION (WITH REALISTIC VALUES)")
+    print("FILTERING FOR TARGET INDUSTRIES")
+    print("=" * 80)
+
+    target_industries = ["Banks - Diversified", "Software - Application", "Consumer Electronics"]
+    filtered_stats = [stats for stats in all_stats if stats.industry in target_industries]
+
+    print(f"Symbole vor Filterung: {len(all_stats)}")
+    print(f"Symbole nach Filterung ({', '.join(target_industries)}): {len(filtered_stats)}")
+
+    # Zeige gefilterte Symbole
+    for industry in target_industries:
+        industry_symbols = [s.symbol for s in filtered_stats if s.industry == industry]
+        if industry_symbols:
+            print(f"  {industry}: {len(industry_symbols)} Symbole - {', '.join(industry_symbols)}")
+
+    # Industry Aggregation NUR für die 3 Ziel-Industrien
+    print("\n" + "=" * 80)
+    print("INDUSTRY AGGREGATION")
     print("=" * 80)
 
     industries = {}
-    for stats in all_stats:
+    for stats in filtered_stats:
         if stats.industry not in industries:
             industries[stats.industry] = []
         industries[stats.industry].append(stats)
@@ -378,24 +405,32 @@ def main():
     for industry, stats_list in industries.items():
         print(f"\n📊 {industry} ({len(stats_list)} Ticker):")
 
-        # Average PE Ratio
+        # 1. Average PE Ratio: Mean PE ratio across all tickers in each industry
         pe_ratios = [s.pe_ratio for s in stats_list if s.pe_ratio is not None]
         avg_pe = statistics.mean(pe_ratios) if pe_ratios else None
 
-        # Average Revenue Growth
+        # 2. Average Revenue Growth: Mean revenue growth across all tickers in each industry
         revenue_growths = [s.revenue_growth for s in stats_list if s.revenue_growth is not None]
         avg_revenue_growth = statistics.mean(revenue_growths) if revenue_growths else None
 
-        # Sum Revenue
+        # 3. Sum of Revenue: Sum revenue across all tickers in each industry
         revenues = [s.revenue for s in stats_list if s.revenue is not None]
         sum_revenue = sum(revenues) if revenues else None
 
         if avg_pe is not None:
-            print(f"   • Average PE Ratio: {avg_pe:.2f}")
+            print(f"   • Average PE Ratio: {avg_pe:.2f} (from {len(pe_ratios)} tickers)")
+        else:
+            print(f"   • Average PE Ratio: No data available")
+
         if avg_revenue_growth is not None:
-            print(f"   • Average Revenue Growth: {avg_revenue_growth:.2f}%")
+            print(f"   • Average Revenue Growth: {avg_revenue_growth:.2f}% (from {len(revenue_growths)} tickers)")
+        else:
+            print(f"   • Average Revenue Growth: No data available")
+
         if sum_revenue is not None:
-            print(f"   • Sum Revenue: ${sum_revenue:,.0f}")
+            print(f"   • Sum Revenue: ${sum_revenue:,.0f} (from {len(revenues)} tickers)")
+        else:
+            print(f"   • Sum Revenue: No data available")
 
         industry_agg = IndustryAggregation(
             industry=industry,
@@ -409,14 +444,14 @@ def main():
 
     # Ergebnisse speichern
     print("\n" + "=" * 80)
-    print("SAVING REALISTIC RESULTS")
+    print("SAVING RESULTS")
     print("=" * 80)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Ticker Statistics
+    # Ticker Statistics (nur gefilterte)
     ticker_results = []
-    for stats in all_stats:
+    for stats in filtered_stats:
         ticker_results.append({
             "symbol": stats.symbol,
             "industry": stats.industry,
@@ -425,13 +460,20 @@ def main():
             "net_income_ttm": stats.net_income_ttm,
             "debt_ratio": stats.debt_ratio,
             "revenue": stats.revenue,
-            "note": "Values corrected to realistic scale based on known market data"
+            "calculation_notes": {
+                "pe_ratio": "Price-to-Earnings ratio from last quarter",
+                "revenue_growth": "Quarter-over-quarter revenue growth (Q-1 vs Q-2)",
+                "net_income_ttm": "Trailing twelve months net income",
+                "debt_ratio": "Debt-to-equity ratio from last year",
+                "price_source": "Latest available price from stockprice.data[-1]"
+            }
         })
 
-    ticker_filename = f"data/ticker_statistics_realistic_{timestamp}.json"
+    ticker_filename = f"data/ticker_statistics_{timestamp}.json"
     with open(ticker_filename, "w") as f:
         json.dump(ticker_results, f, indent=2)
-    print(f"✅ Realistic Ticker Statistics: {ticker_filename}")
+    print(f"✅ Ticker Statistics: {ticker_filename}")
+    print(f"   Contains {len(ticker_results)} tickers from target industries")
 
     # Industry Aggregation
     industry_results_dict = []
@@ -442,20 +484,27 @@ def main():
             "avg_revenue_growth": agg.avg_revenue_growth,
             "sum_revenue": agg.sum_revenue,
             "ticker_count": agg.ticker_count,
-            "note": "Aggregations based on realistically scaled values"
+            "aggregation_notes": {
+                "avg_pe_ratio": "Mean PE ratio across all tickers in each industry",
+                "avg_revenue_growth": "Mean revenue growth across all tickers in each industry",
+                "sum_revenue": "Sum revenue across all tickers in each industry"
+            }
         })
 
-    industry_filename = f"data/industry_aggregation_realistic_{timestamp}.json"
+    industry_filename = f"data/industry_aggregation_{timestamp}.json"
     with open(industry_filename, "w") as f:
         json.dump(industry_results_dict, f, indent=2)
-    print(f"✅ Realistic Industry Aggregation: {industry_filename}")
+    print(f"✅ Industry Aggregation: {industry_filename}")
+    print(f"   Contains {len(industry_results_dict)} industries")
 
     # Zusammenfassung
     print("\n" + "=" * 80)
-    print("✅ STEP 2 COMPLETED WITH REALISTIC VALUES!")
+    print("✅ STEP 2 COMPLETED!")
     print("=" * 80)
 
-    print(f"\n📊 REALISTIC RESULTS SUMMARY:")
+    print(f"\n📊 RESULTS SUMMARY (Target Industries Only):")
+    print(f"Total tickers analyzed: {len(filtered_stats)}")
+
     for agg in industry_results:
         print(f"\n  {agg.industry}:")
         print(f"    • Ticker Count: {agg.ticker_count}")
@@ -467,15 +516,18 @@ def main():
             print(f"    • Sum Revenue: ${agg.sum_revenue:,.0f}")
 
     print(f"\n📁 OUTPUT FILES:")
-    print(f"   1. {ticker_filename} - Realistic ticker statistics")
-    print(f"   2. {industry_filename} - Realistic industry aggregations")
+    print(f"   1. {ticker_filename} - Ticker statistics (filtered)")
+    print(f"   2. {industry_filename} - Industry aggregations")
 
-    print(f"\n⚠️  IMPORTANT NOTE:")
-    print(f"   Values were scaled to realistic levels based on known market data.")
-    print(f"   The API returns inconsistent scaling factors for different symbols.")
+    print(f"\n📋 CALCULATION SPECIFICATIONS:")
+    print(f"   1. PE Ratio: Latest Price / Last Quarter Net Income")
+    print(f"   2. Revenue Growth: (Q-2 Revenue - Q-1 Revenue) / Q-1 Revenue")
+    print(f"   3. Net Income TTM: Trailing Twelve Months Net Income")
+    print(f"   4. Debt Ratio: Total Debt / Total Equity (from last year)")
+    print(f"   5. Industries: {', '.join(target_industries)}")
 
-    print(f"\n➡️  NEXT: Run Step 3 with realistic data:")
-    print(f"    python step3_with_realistic_data.py")
+    print(f"\n➡️  NEXT: Run Step 3:")
+    print(f"    python step3_data_analysis.py")
 
 
 if __name__ == "__main__":

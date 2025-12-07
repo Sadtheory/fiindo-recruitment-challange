@@ -3,7 +3,7 @@
 
 from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean
 from sqlalchemy.ext.declarative import declarative_base
-from datetime import datetime
+from datetime import datetime, timezone
 
 Base = declarative_base()
 
@@ -31,7 +31,8 @@ class TickerStatistics(Base):
     total_equity = Column(Float, nullable=True)
 
     # Metadaten
-    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    last_updated = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                          onupdate=lambda: datetime.now(timezone.utc))
     data_date = Column(DateTime, nullable=True)
     is_active = Column(Boolean, default=True)
 
@@ -54,8 +55,9 @@ class IndustryAggregation(Base):
     ticker_count = Column(Integer, default=0)
 
     # Metadaten
-    calculation_date = Column(DateTime, default=datetime.utcnow)
-    last_updated = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    calculation_date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    last_updated = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                          onupdate=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
         return f"<IndustryAggregation(industry='{self.industry}', tickers={self.ticker_count})>"
