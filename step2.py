@@ -17,6 +17,7 @@ class TickerStatistics:
     net_income_ttm: Optional[float] = None
     debt_ratio: Optional[float] = None
     revenue: Optional[float] = None
+    price: Optional[float] = None
 
 
 @dataclass
@@ -51,140 +52,238 @@ class DataCalculator:
         return None
 
     @staticmethod
-    def extract_last_quarter_financials(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Revenue und Net Income für das letzte Quartal (data[0])"""
-        revenue = None
-        net_income = None
-
+    def find_latest_quarter(income_data: Dict) -> Optional[Dict]:
+        """Findet das neueste Quartal in den Finanzdaten"""
         if not income_data or "fundamentals" not in income_data:
-            return revenue, net_income
+            return None
 
-        def search_last_quarter_values(data):
-            nonlocal revenue, net_income
+        def search_quarterly_data(data, depth=0):
+            if depth > 10:
+                return None
 
             if isinstance(data, dict):
-                # In financials.income_statement.data suchen (data[0] = letztes Quartal)
+                # Suche nach income_statement data
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
-                    if "data" in income_stmt and isinstance(income_stmt["data"], list) and len(income_stmt["data"]) > 0:
-                        # LETZTES Quartal ist data[0]
-                        last_quarter = income_stmt["data"][0]
+                    if "data" in income_stmt and isinstance(income_stmt["data"], list):
+                        quarters = []
 
-                        if revenue is None and "revenue" in last_quarter and isinstance(last_quarter["revenue"],
-                                                                                        (int, float)):
-                            revenue = float(last_quarter["revenue"])
+                        # Gehe durch alle Einträge und identifiziere Quartale
+                        for item in income_stmt["data"]:
+                            if isinstance(item, dict):
+                                # Prüfe ob es ein Quartal ist
+                                period = item.get("period", "").lower()
+                                date = item.get("date", "")
 
-                        if net_income is None and "netIncome" in last_quarter and isinstance(last_quarter["netIncome"],
-                                                                                             (int, float)):
-                            net_income = float(last_quarter["netIncome"])
+                                # Quartal erkennen: "quarter", "q", oder Datum im Quartalsformat
+                                is_quarter = ("quarter" in period or
+                                              "q" in period or
+                                              (
+                                                          len(date) == 10 and "-03-" not in date and "-06-" not in date and "-09-" not in date and "-12-" not in date))
 
-                # Allgemeine Suche als Fallback
-                if revenue is None and "revenue" in data and isinstance(data["revenue"], (int, float)):
-                    revenue = float(data["revenue"])
+                                if is_quarter:
+                                    quarters.append(item)
 
-                if net_income is None and "netIncome" in data and isinstance(data["netIncome"], (int, float)):
-                    net_income = float(data["netIncome"])
+                        # Finde das neueste Quartal (höchstes Datum)
+                        if quarters:
+                            # Sortiere nach Datum (neueste zuerst)
+                            sorted_quarters = sorted(
+                                quarters,
+                                key=lambda x: x.get("date", ""),
+                                reverse=True
+                            )
+                            return sorted_quarters[0]
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        search_last_quarter_values(value)
+                        result = search_quarterly_data(value, depth + 1)
+                        if result:
+                            return result
 
             elif isinstance(data, list):
                 for item in data:
-                    search_last_quarter_values(item)
+                    result = search_quarterly_data(item, depth + 1)
+                    if result:
+                        return result
 
-        search_last_quarter_values(income_data["fundamentals"])
-        return revenue, net_income
+            return None
+
+        return search_quarterly_data(income_data["fundamentals"])
 
     @staticmethod
-    def extract_revenue_for_growth_calculation(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Revenue für aktuelles (Q-2) und vorheriges Quartal (Q-1) für Growth-Berechnung"""
-        revenue_q2 = None  # Aktuelles Quartal (data[0])
-        revenue_q1 = None  # Vorheriges Quartal (data[1])
-
+    def find_previous_quarter(income_data: Dict, latest_quarter_date: str) -> Optional[Dict]:
+        """Findet das vorherige Quartal zum gegebenen Datum"""
         if not income_data or "fundamentals" not in income_data:
-            return revenue_q2, revenue_q1
+            return None
 
-        fundamentals = income_data["fundamentals"]
-
-        def search_quarterly_revenue(data):
-            nonlocal revenue_q2, revenue_q1
+        def search_previous_quarter_data(data, depth=0):
+            if depth > 10:
+                return None
 
             if isinstance(data, dict):
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        # Q-2: Letztes Quartal (data[0])
-                        if len(income_stmt["data"]) > 0 and revenue_q2 is None:
-                            q2_data = income_stmt["data"][0]
-                            if "revenue" in q2_data and isinstance(q2_data["revenue"], (int, float)):
-                                revenue_q2 = float(q2_data["revenue"])
+                        quarters = []
 
-                        # Q-1: Vorletztes Quartal (data[1])
-                        if len(income_stmt["data"]) > 1 and revenue_q1 is None:
-                            q1_data = income_stmt["data"][1]
-                            if "revenue" in q1_data and isinstance(q1_data["revenue"], (int, float)):
-                                revenue_q1 = float(q1_data["revenue"])
+                        # Sammle alle Quartale
+                        for item in income_stmt["data"]:
+                            if isinstance(item, dict):
+                                period = item.get("period", "").lower()
+                                date = item.get("date", "")
+
+                                is_quarter = ("quarter" in period or
+                                              "q" in period or
+                                              (
+                                                          len(date) == 10 and "-03-" not in date and "-06-" not in date and "-09-" not in date and "-12-" not in date))
+
+                                if is_quarter and date != latest_quarter_date:
+                                    quarters.append(item)
+
+                        # Sortiere nach Datum und finde das Quartal vor dem neuesten
+                        if quarters:
+                            sorted_quarters = sorted(
+                                quarters,
+                                key=lambda x: x.get("date", ""),
+                                reverse=True
+                            )
+
+                            # Suche das Quartal direkt vor dem neuesten
+                            for quarter in sorted_quarters:
+                                if quarter.get("date", "") < latest_quarter_date:
+                                    return quarter
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        search_quarterly_revenue(value)
+                        result = search_previous_quarter_data(value, depth + 1)
+                        if result:
+                            return result
 
             elif isinstance(data, list):
                 for item in data:
-                    search_quarterly_revenue(item)
+                    result = search_previous_quarter_data(item, depth + 1)
+                    if result:
+                        return result
 
-        search_quarterly_revenue(fundamentals)
+            return None
+
+        return search_previous_quarter_data(income_data["fundamentals"])
+
+    @staticmethod
+    def extract_last_quarter_financials(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Revenue und Net Income für das neueste Quartal"""
+        revenue = None
+        net_income = None
+
+        latest_quarter = DataCalculator.find_latest_quarter(income_data)
+
+        if latest_quarter:
+            if "revenue" in latest_quarter and isinstance(latest_quarter["revenue"], (int, float)):
+                revenue = float(latest_quarter["revenue"])
+
+            if "netIncome" in latest_quarter and isinstance(latest_quarter["netIncome"], (int, float)):
+                net_income = float(latest_quarter["netIncome"])
+
+        return revenue, net_income
+
+    @staticmethod
+    def extract_revenue_for_growth_calculation(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Revenue für aktuelles (neuestes) und vorheriges Quartal"""
+        revenue_q2 = None  # Neuestes Quartal
+        revenue_q1 = None  # Vorheriges Quartal
+
+        latest_quarter = DataCalculator.find_latest_quarter(income_data)
+
+        if latest_quarter:
+            latest_date = latest_quarter.get("date", "")
+
+            # Revenue für neuestes Quartal
+            if "revenue" in latest_quarter and isinstance(latest_quarter["revenue"], (int, float)):
+                revenue_q2 = float(latest_quarter["revenue"])
+
+            # Suche vorheriges Quartal
+            previous_quarter = DataCalculator.find_previous_quarter(income_data, latest_date)
+
+            if previous_quarter:
+                if "revenue" in previous_quarter and isinstance(previous_quarter["revenue"], (int, float)):
+                    revenue_q1 = float(previous_quarter["revenue"])
+
         return revenue_q2, revenue_q1
 
     @staticmethod
-    def extract_last_year_debt_equity(balance_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Debt und Equity für das letzte Jahr (data[0])"""
-        debt = None
-        equity = None
-
+    def find_latest_year_balance(balance_data: Dict) -> Optional[Dict]:
+        """Findet die neuesten Jahresdaten in der Bilanz"""
         if not balance_data or "fundamentals" not in balance_data:
-            return debt, equity
+            return None
 
-        def search_last_year_values(data):
-            nonlocal debt, equity
+        def search_annual_balance_data(data, depth=0):
+            if depth > 10:
+                return None
 
             if isinstance(data, dict):
-                # In financials.balance_sheet_statement.data suchen (data[0] = letztes Jahr)
                 if "financials" in data and "balance_sheet_statement" in data["financials"]:
                     balance_stmt = data["financials"]["balance_sheet_statement"]
-                    if "data" in balance_stmt and isinstance(balance_stmt["data"], list) and len(
-                            balance_stmt["data"]) > 0:
-                        # LETZTES Jahr ist data[0]
-                        last_year = balance_stmt["data"][0]
+                    if "data" in balance_stmt and isinstance(balance_stmt["data"], list):
+                        annual_data = []
 
-                        if debt is None and "totalDebt" in last_year and isinstance(last_year["totalDebt"],
-                                                                                    (int, float)):
-                            debt = float(last_year["totalDebt"])
+                        # Sammle Jahresdaten
+                        for item in balance_stmt["data"]:
+                            if isinstance(item, dict):
+                                period = item.get("period", "").lower()
+                                date = item.get("date", "")
 
-                        if equity is None and "totalEquity" in last_year and isinstance(last_year["totalEquity"],
-                                                                                        (int, float)):
-                            equity = float(last_year["totalEquity"])
+                                # Jahresdaten erkennen
+                                is_annual = ("annual" in period or
+                                             "year" in period or
+                                             (len(date) == 10 and (
+                                                         "-12-" in date or "-03-" in date or "-06-" in date or "-09-" in date)))
 
-                # Allgemeine Suche als Fallback
-                if debt is None and "totalDebt" in data and isinstance(data["totalDebt"], (int, float)):
-                    debt = float(data["totalDebt"])
+                                if is_annual:
+                                    annual_data.append(item)
 
-                if equity is None and "totalEquity" in data and isinstance(data["totalEquity"], (int, float)):
-                    equity = float(data["totalEquity"])
+                        # Finde neueste Jahresdaten
+                        if annual_data:
+                            sorted_annual = sorted(
+                                annual_data,
+                                key=lambda x: x.get("date", ""),
+                                reverse=True
+                            )
+                            return sorted_annual[0]
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        search_last_year_values(value)
+                        result = search_annual_balance_data(value, depth + 1)
+                        if result:
+                            return result
 
             elif isinstance(data, list):
                 for item in data:
-                    search_last_year_values(item)
+                    result = search_annual_balance_data(item, depth + 1)
+                    if result:
+                        return result
 
-        search_last_year_values(balance_data["fundamentals"])
+            return None
+
+        return search_annual_balance_data(balance_data["fundamentals"])
+
+    @staticmethod
+    def extract_last_year_debt_equity(balance_data: Dict) -> Tuple[Optional[float], Optional[float]]:
+        """Extrahiert Debt und Equity für das neueste Jahr"""
+        debt = None
+        equity = None
+
+        latest_year_balance = DataCalculator.find_latest_year_balance(balance_data)
+
+        if latest_year_balance:
+            if "totalDebt" in latest_year_balance and isinstance(latest_year_balance["totalDebt"], (int, float)):
+                debt = float(latest_year_balance["totalDebt"])
+
+            if "totalEquity" in latest_year_balance and isinstance(latest_year_balance["totalEquity"], (int, float)):
+                equity = float(latest_year_balance["totalEquity"])
+
         return debt, equity
 
     @staticmethod
@@ -193,40 +292,61 @@ class DataCalculator:
         if not income_data or "fundamentals" not in income_data:
             return None
 
-        # Versuche TTM direkt zu finden
-        def search_ttm_income(data):
-            if isinstance(data, dict):
-                # Suche nach TTM oder letzten 4 Quartalen
-                if "netIncome" in data and isinstance(data["netIncome"], (int, float)):
-                    # Falls es ein TTM Wert ist
-                    return float(data["netIncome"])
+        def search_ttm_income(data, depth=0):
+            if depth > 10:
+                return None
 
-                # Suche in income statement data und summiere die letzten 4 Quartale
+            if isinstance(data, dict):
+                # Suche nach TTM Wert
+                if "ttm" in data and isinstance(data["ttm"], dict):
+                    ttm_data = data["ttm"]
+                    if "netIncome" in ttm_data and isinstance(ttm_data["netIncome"], (int, float)):
+                        return float(ttm_data["netIncome"])
+
+                # Suche nach Net Income der letzten 4 Quartale
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        # Summiere Net Income der letzten 4 Quartale
-                        ttm_income = 0
-                        quarters_counted = 0
-                        for quarter_data in income_stmt["data"][:4]:  # Letzte 4 Quartale
-                            if "netIncome" in quarter_data and isinstance(quarter_data["netIncome"], (int, float)):
-                                ttm_income += float(quarter_data["netIncome"])
-                                quarters_counted += 1
+                        # Sammle alle Quartale
+                        quarters = []
+                        for item in income_stmt["data"]:
+                            if isinstance(item, dict):
+                                period = item.get("period", "").lower()
+                                if "quarter" in period or "q" in period:
+                                    if "netIncome" in item and isinstance(item["netIncome"], (int, float)):
+                                        quarters.append({
+                                            "date": item.get("date", ""),
+                                            "netIncome": float(item["netIncome"])
+                                        })
 
-                        if quarters_counted > 0:
-                            return ttm_income
+                        # Sortiere nach Datum (neueste zuerst) und summiere die letzten 4
+                        if quarters:
+                            sorted_quarters = sorted(
+                                quarters,
+                                key=lambda x: x["date"],
+                                reverse=True
+                            )
+
+                            ttm_sum = 0
+                            count = 0
+                            for q in sorted_quarters[:4]:  # Letzte 4 Quartale
+                                ttm_sum += q["netIncome"]
+                                count += 1
+
+                            if count > 0:
+                                return ttm_sum
 
                 # Rekursiv suchen
                 for value in data.values():
                     if isinstance(value, (dict, list)):
-                        result = search_ttm_income(value)
-                        if result is not None:
+                        result = search_ttm_income(value, depth + 1)
+                        if result:
                             return result
 
             elif isinstance(data, list):
                 for item in data:
-                    result = search_ttm_income(item)
-                    if result is not None:
+                    result = search_ttm_income(item, depth + 1)
+                    if result:
                         return result
 
             return None
@@ -234,9 +354,49 @@ class DataCalculator:
         return search_ttm_income(income_data["fundamentals"])
 
     @staticmethod
+    def extract_annual_net_income(income_data: Dict) -> Optional[float]:
+        """Extrahiert jährliches Net Income für PE Ratio Berechnung"""
+        if not income_data or "fundamentals" not in income_data:
+            return None
+
+        def search_annual_income(data, depth=0):
+            if depth > 10:
+                return None
+
+            if isinstance(data, dict):
+                # Suche nach Jahresdaten
+                period = data.get("period", "").lower()
+                if "annual" in period or "year" in period:
+                    if "netIncome" in data and isinstance(data["netIncome"], (int, float)):
+                        return float(data["netIncome"])
+
+                if "financials" in data and "income_statement" in data["financials"]:
+                    income_stmt = data["financials"]["income_statement"]
+                    if "annual" in income_stmt and isinstance(income_stmt["annual"], dict):
+                        annual_data = income_stmt["annual"]
+                        if "netIncome" in annual_data and isinstance(annual_data["netIncome"], (int, float)):
+                            return float(annual_data["netIncome"])
+
+                # Rekursiv suchen
+                for value in data.values():
+                    if isinstance(value, (dict, list)):
+                        result = search_annual_income(value, depth + 1)
+                        if result:
+                            return result
+
+            elif isinstance(data, list):
+                for item in data:
+                    result = search_annual_income(item, depth + 1)
+                    if result:
+                        return result
+
+            return None
+
+        return search_annual_income(income_data["fundamentals"])
+
+    @staticmethod
     def determine_industry(symbol: str) -> str:
         """Bestimmt Industrie basierend auf Symbol"""
-        # Erweiterte Industrieerkennung
         symbol_upper = symbol.upper()
 
         if any(bank in symbol_upper for bank in ["JPM", "BAC", "C", "WFC", "GS", "MS", "DB", "UBS"]):
@@ -252,7 +412,7 @@ class DataCalculator:
 def main():
     """Hauptfunktion für Berechnungen gemäß Spezifikation"""
     print("=" * 80)
-    print("STEP 2: DATA CALCULATIONS")
+    print("STEP 2: DATA CALCULATIONS (CORRECTED - FIND LATEST QUARTER)")
     print("=" * 80)
 
     # Daten laden
@@ -272,10 +432,11 @@ def main():
 
     for symbol, symbol_data in raw_data.items():
         print(f"\n🔹 {symbol}:")
+        print("-" * 40)
 
         # Industrie bestimmen
         industry = calculator.determine_industry(symbol)
-        print(f"   Industry: {industry}")
+        print(f"Industry: {industry}")
 
         # 1. LATEST Price extrahieren
         latest_price = None
@@ -283,26 +444,33 @@ def main():
             latest_price = calculator.extract_latest_price(symbol_data["eod"])
 
         if latest_price is not None:
-            print(f"   Latest Price: ${latest_price:.2f}")
+            print(f"Latest Price: ${latest_price:.2f}")
+        else:
+            print("Latest Price: Not available")
 
-        # 2. LAST QUARTER Financials extrahieren
+        # 2. LAST QUARTER Financials extrahieren (neuestes Quartal)
         last_quarter_revenue, last_quarter_net_income = None, None
         if "income_statement" in symbol_data:
             last_quarter_revenue, last_quarter_net_income = calculator.extract_last_quarter_financials(
                 symbol_data["income_statement"])
 
         if last_quarter_revenue is not None:
-            print(f"   Last Quarter Revenue: ${last_quarter_revenue:,.0f}")
+            print(f"Last Quarter Revenue: ${last_quarter_revenue:,.0f}")
+        else:
+            print("Last Quarter Revenue: Not available")
+
         if last_quarter_net_income is not None:
-            print(f"   Last Quarter Net Income: ${last_quarter_net_income:,.0f}")
+            print(f"Last Quarter Net Income: ${last_quarter_net_income:,.0f}")
+        else:
+            print("Last Quarter Net Income: Not available")
 
-        # 3. TTM Net Income extrahieren
-        net_income_ttm = None
+        # 3. ANNUAL Net Income extrahieren (für PE Ratio)
+        annual_net_income = None
         if "income_statement" in symbol_data:
-            net_income_ttm = calculator.extract_net_income_ttm(symbol_data["income_statement"])
+            annual_net_income = calculator.extract_annual_net_income(symbol_data["income_statement"])
 
-        if net_income_ttm is not None:
-            print(f"   Net Income TTM: ${net_income_ttm:,.0f}")
+        if annual_net_income is not None:
+            print(f"Annual Net Income: ${annual_net_income:,.0f}")
 
         # 4. Revenue Growth berechnen (Q-1 vs Q-2)
         revenue_q2, revenue_q1 = None, None
@@ -310,9 +478,9 @@ def main():
             revenue_q2, revenue_q1 = calculator.extract_revenue_for_growth_calculation(symbol_data["income_statement"])
 
         if revenue_q1 is not None:
-            print(f"   Previous Quarter Revenue (Q-1): ${revenue_q1:,.0f}")
+            print(f"Previous Quarter Revenue (Q-1): ${revenue_q1:,.0f}")
         if revenue_q2 is not None:
-            print(f"   Current Quarter Revenue (Q-2): ${revenue_q2:,.0f}")
+            print(f"Current Quarter Revenue (Q-2): ${revenue_q2:,.0f}")
 
         # 5. LAST YEAR Debt & Equity für Debt Ratio
         debt, equity = None, None
@@ -320,44 +488,61 @@ def main():
             debt, equity = calculator.extract_last_year_debt_equity(symbol_data["balance_sheet_statement"])
 
         if debt is not None:
-            print(f"   Total Debt (last year): ${debt:,.0f}")
+            print(f"Total Debt (last year): ${debt:,.0f}")
         if equity is not None:
-            print(f"   Total Equity (last year): ${equity:,.0f}")
+            print(f"Total Equity (last year): ${equity:,.0f}")
+
+        # 6. TTM Net Income
+        net_income_ttm = None
+        if "income_statement" in symbol_data:
+            net_income_ttm = calculator.extract_net_income_ttm(symbol_data["income_statement"])
+
+        if net_income_ttm is not None:
+            print(f"Net Income TTM: ${net_income_ttm:,.0f}")
 
         # Berechnungen nach Spezifikation
-        # 1. PE Ratio: Price-to-Earnings ratio from last quarter
+        print("\n📈 CALCULATED METRICS:")
+
+        # 1. PE Ratio: Price-to-Earnings ratio
+        # Verwende annual net income für PE Ratio (Standard)
         pe_ratio = None
-        if latest_price and last_quarter_net_income and last_quarter_net_income != 0:
-            pe_ratio = latest_price / last_quarter_net_income
-            print(f"   PE Ratio: ${latest_price:.2f} / ${last_quarter_net_income:,.0f} = {pe_ratio:.2f}")
+        if latest_price and annual_net_income and annual_net_income != 0:
+            pe_ratio = latest_price / annual_net_income
+            print(f"PE Ratio: ${latest_price:.2f} / ${annual_net_income:,.0f} = {pe_ratio:.2f}")
+        elif latest_price and last_quarter_net_income and last_quarter_net_income != 0:
+            # Fallback: Quartals-Net Income × 4 für annualisierte Schätzung
+            annualized_net_income = last_quarter_net_income * 4
+            if annualized_net_income > 0:
+                pe_ratio = latest_price / annualized_net_income
+                print(
+                    f"PE Ratio (estimated): ${latest_price:.2f} / (${last_quarter_net_income:,.0f} × 4) = {pe_ratio:.2f}")
 
         # 2. Revenue Growth: Quarter-over-quarter revenue growth (Q-1 vs Q-2)
         revenue_growth = None
         if revenue_q1 and revenue_q2 and revenue_q1 != 0:
             revenue_growth = ((revenue_q2 - revenue_q1) / revenue_q1) * 100
             print(
-                f"   Revenue Growth: (${revenue_q2:,.0f} - ${revenue_q1:,.0f}) / ${revenue_q1:,.0f} × 100 = {revenue_growth:.2f}%")
+                f"Revenue Growth: (${revenue_q2:,.0f} - ${revenue_q1:,.0f}) / ${revenue_q1:,.0f} × 100 = {revenue_growth:.2f}%")
 
-        # 3. NetIncomeTTM: Trailing twelve months net income (bereits extrahiert)
+        # 3. NetIncomeTTM: Bereits extrahiert
+        # Verwende extrahierten TTM Wert oder annual Net Income
 
         # 4. DebtRatio: Debt-to-equity ratio from last year
         debt_ratio = None
         if debt and equity and equity != 0:
             debt_ratio = debt / equity
-            print(f"   Debt Ratio: ${debt:,.0f} / ${equity:,.0f} = {debt_ratio:.4f}")
+            print(f"Debt Ratio: ${debt:,.0f} / ${equity:,.0f} = {debt_ratio:.4f}")
 
-        print(f"\n   📊 FINAL STATISTICS FOR {symbol}:")
-        print(f"     • Latest Price: ${latest_price:,.2f}" if latest_price else "     • Price: Not available")
+        print(f"\n✅ FINAL STATISTICS FOR {symbol}:")
+        print(f"   • Latest Price: ${latest_price:,.2f}" if latest_price else "   • Price: Not available")
         print(
-            f"     • Last Quarter Revenue: ${last_quarter_revenue:,.0f}" if last_quarter_revenue else "     • Revenue: Not available")
+            f"   • Last Quarter Revenue: ${last_quarter_revenue:,.0f}" if last_quarter_revenue else "   • Revenue: Not available")
+        print(f"   • PE Ratio: {pe_ratio:.2f}" if pe_ratio else "   • PE Ratio: Not available")
         print(
-            f"     • PE Ratio (based on last quarter): {pe_ratio:.2f}" if pe_ratio else "     • PE Ratio: Not available")
+            f"   • Revenue Growth: {revenue_growth:.2f}%" if revenue_growth is not None else "   • Revenue Growth: Not available")
         print(
-            f"     • Revenue Growth (QoQ): {revenue_growth:.2f}%" if revenue_growth is not None else "     • Revenue Growth: Not available")
-        print(
-            f"     • Net Income TTM: ${net_income_ttm:,.0f}" if net_income_ttm else "     • Net Income TTM: Not available")
-        print(
-            f"     • Debt Ratio (from last year): {debt_ratio:.4f}" if debt_ratio else "     • Debt Ratio: Not available")
+            f"   • Net Income TTM: ${net_income_ttm:,.0f}" if net_income_ttm else "   • Net Income TTM: Not available")
+        print(f"   • Debt Ratio: {debt_ratio:.4f}" if debt_ratio else "   • Debt Ratio: Not available")
 
         # TickerStatistics erstellen
         stats = TickerStatistics(
@@ -367,7 +552,8 @@ def main():
             revenue_growth=revenue_growth,
             net_income_ttm=net_income_ttm,
             debt_ratio=debt_ratio,
-            revenue=last_quarter_revenue
+            revenue=last_quarter_revenue,
+            price=latest_price
         )
 
         all_stats.append(stats)
@@ -460,12 +646,14 @@ def main():
             "net_income_ttm": stats.net_income_ttm,
             "debt_ratio": stats.debt_ratio,
             "revenue": stats.revenue,
+            "price": stats.price,
             "calculation_notes": {
-                "pe_ratio": "Price-to-Earnings ratio from last quarter",
-                "revenue_growth": "Quarter-over-quarter revenue growth (Q-1 vs Q-2)",
+                "pe_ratio": "Price-to-Earnings ratio (using annual net income or estimated from quarterly)",
+                "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
                 "net_income_ttm": "Trailing twelve months net income",
-                "debt_ratio": "Debt-to-equity ratio from last year",
-                "price_source": "Latest available price from stockprice.data[-1]"
+                "debt_ratio": "Debt-to-equity ratio from latest year",
+                "price_source": "Latest available price from stockprice.data[-1]",
+                "quarter_selection": "Finds latest quarter by date, not by array position"
             }
         })
 
@@ -520,14 +708,15 @@ def main():
     print(f"   2. {industry_filename} - Industry aggregations")
 
     print(f"\n📋 CALCULATION SPECIFICATIONS:")
-    print(f"   1. PE Ratio: Latest Price / Last Quarter Net Income")
-    print(f"   2. Revenue Growth: (Q-2 Revenue - Q-1 Revenue) / Q-1 Revenue")
+    print(f"   1. PE Ratio: Latest Price / Annual Net Income (or estimated from quarterly)")
+    print(f"   2. Revenue Growth: (Latest Quarter Revenue - Previous Quarter Revenue) / Previous Quarter Revenue")
     print(f"   3. Net Income TTM: Trailing Twelve Months Net Income")
-    print(f"   4. Debt Ratio: Total Debt / Total Equity (from last year)")
-    print(f"   5. Industries: {', '.join(target_industries)}")
+    print(f"   4. Debt Ratio: Total Debt / Total Equity (from latest year)")
+    print(f"   5. Quarter Selection: Finds latest quarter by date, not by array position")
+    print(f"   6. Industries: {', '.join(target_industries)}")
 
-    print(f"\n➡️  NEXT: Run Step 3:")
-    print(f"    python step3_data_analysis.py")
+    print(f"\n➡️  NEXT: Run Step 3 to store in database:")
+    print(f"    python step3_data_storage.py")
 
 
 if __name__ == "__main__":

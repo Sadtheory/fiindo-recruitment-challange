@@ -1,0 +1,56 @@
+[
+  {
+    "symbol": "AAPL.US",
+    "industry": "Consumer Electronics",
+    "pe_ratio": 2.4765298284543822e-09,
+    "revenue_growth": -1.3873887100326137,
+    "net_income_ttm": 99280000000.0,
+    "debt_ratio": 1.5448579674920249,
+    "revenue": 94036000000.0,
+    "price": 232.14,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (using annual net income or estimated from quarterly)",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "price_source": "Latest available price from stockprice.data[-1]",
+      "quarter_selection": "Finds latest quarter by date, not by array position"
+    }
+  },
+  {
+    "symbol": "JPM.US",
+    "industry": "Banks - Diversified",
+    "pe_ratio": 5.028024287716021e-09,
+    "revenue_growth": 1.5049269305005297,
+    "net_income_ttm": 56533000000.0,
+    "debt_ratio": 1.3590988557788213,
+    "revenue": 69944000000.0,
+    "price": 301.42,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (using annual net income or estimated from quarterly)",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "price_source": "Latest available price from stockprice.data[-1]",
+      "quarter_selection": "Finds latest quarter by date, not by array position"
+    }
+  },
+  {
+    "symbol": "NVDA.US",
+    "industry": "Consumer Electronics",
+    "pe_ratio": 1.6480584361516918e-09,
+    "revenue_growth": 6.084608052289956,
+    "net_income_ttm": 86597000000.0,
+    "debt_ratio": null,
+    "revenue": 46743000000.0,
+    "price": 174.18,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (using annual net income or estimated from quarterly)",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "price_source": "Latest available price from stockprice.data[-1]",
+      "quarter_selection": "Finds latest quarter by date, not by array position"
+    }
+  }
+]
