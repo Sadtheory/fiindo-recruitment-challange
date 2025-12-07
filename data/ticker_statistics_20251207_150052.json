@@ -1,0 +1,59 @@
+[
+  {
+    "symbol": "AAPL.US",
+    "industry": "Consumer Electronics",
+    "pe_ratio": 36.96496815286624,
+    "revenue_growth": -1.3873887100326137,
+    "net_income_ttm": null,
+    "debt_ratio": 1.4499985020521886,
+    "revenue": 94036000000.0,
+    "price": 232.14,
+    "eps": 6.28,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (calculated from available EPS values)",
+      "eps_source": "Priority: EPS TTM > EPS Annual > Quarterly EPS \u00d7 4 > Annual Net Income",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income (extracted from income statement)",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "quarter_selection": "Finds latest quarter by date"
+    }
+  },
+  {
+    "symbol": "JPM.US",
+    "industry": "Banks - Diversified",
+    "pe_ratio": 14.353333333333333,
+    "revenue_growth": 1.5049269305005297,
+    "net_income_ttm": null,
+    "debt_ratio": 2.1787630743884114,
+    "revenue": 69944000000.0,
+    "price": 301.42,
+    "eps": 21.0,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (calculated from available EPS values)",
+      "eps_source": "Priority: EPS TTM > EPS Annual > Quarterly EPS \u00d7 4 > Annual Net Income",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income (extracted from income statement)",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "quarter_selection": "Finds latest quarter by date"
+    }
+  },
+  {
+    "symbol": "NVDA.US",
+    "industry": "Consumer Electronics",
+    "pe_ratio": 40.31944444444444,
+    "revenue_growth": 6.084608052289956,
+    "net_income_ttm": null,
+    "debt_ratio": 0.1294641168832806,
+    "revenue": 46743000000.0,
+    "price": 174.18,
+    "eps": 4.32,
+    "calculation_notes": {
+      "pe_ratio": "Price-to-Earnings ratio (calculated from available EPS values)",
+      "eps_source": "Priority: EPS TTM > EPS Annual > Quarterly EPS \u00d7 4 > Annual Net Income",
+      "revenue_growth": "Quarter-over-quarter revenue growth (previous vs latest quarter)",
+      "net_income_ttm": "Trailing twelve months net income (extracted from income statement)",
+      "debt_ratio": "Debt-to-equity ratio from latest year",
+      "quarter_selection": "Finds latest quarter by date"
+    }
+  }
+]

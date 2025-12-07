@@ -1,7 +1,7 @@
 [
   {
     "industry": "Consumer Electronics",
-    "avg_pe_ratio": 2.062294132303037e-09,
+    "avg_pe_ratio": 38.64220629865534,
     "avg_revenue_growth": 2.348609671128671,
     "sum_revenue": 140779000000.0,
     "ticker_count": 2,
@@ -13,7 +13,7 @@
   },
   {
     "industry": "Banks - Diversified",
-    "avg_pe_ratio": 5.028024287716021e-09,
+    "avg_pe_ratio": 14.353333333333333,
     "avg_revenue_growth": 1.5049269305005297,
     "sum_revenue": 69944000000.0,
     "ticker_count": 1,
