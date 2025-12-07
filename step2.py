@@ -84,21 +84,6 @@ class DataCalculator:
                                         latest_date = date
                                         latest_quarter = item
 
-                # Rekursiv suchen in allen Unterstrukturen
-                for value in data.values():
-                    if isinstance(value, (dict, list)):
-                        result = search_quarterly_data(value)
-                        if result and result.get("date", "") > latest_date:
-                            latest_quarter = result
-                            latest_date = result.get("date", "")
-
-            elif isinstance(data, list):
-                for item in data:
-                    result = search_quarterly_data(item)
-                    if result and result.get("date", "") > latest_date:
-                        latest_quarter = result
-                        latest_date = result.get("date", "")
-
             return latest_quarter
 
         return search_quarterly_data(income_data["fundamentals"])
@@ -133,23 +118,6 @@ class DataCalculator:
                                     if date > previous_date:
                                         previous_date = date
                                         previous_quarter = item
-
-                # Rekursiv suchen
-                for value in data.values():
-                    if isinstance(value, (dict, list)):
-                        result = search_previous_quarter_data(value)
-                        if result and result.get("date", "") > previous_date and result.get("date",
-                                                                                            "") < latest_quarter_date:
-                            previous_quarter = result
-                            previous_date = result.get("date", "")
-
-            elif isinstance(data, list):
-                for item in data:
-                    result = search_previous_quarter_data(item)
-                    if result and result.get("date", "") > previous_date and result.get("date",
-                                                                                        "") < latest_quarter_date:
-                        previous_quarter = result
-                        previous_date = result.get("date", "")
 
             return previous_quarter
 
@@ -236,21 +204,6 @@ class DataCalculator:
                                     if date > latest_date:
                                         latest_date = date
                                         latest_year = item
-
-                # Rekursiv suchen
-                for value in data.values():
-                    if isinstance(value, (dict, list)):
-                        result = search_annual_balance_data(value)
-                        if result and result.get("date", "") > latest_date:
-                            latest_year = result
-                            latest_date = result.get("date", "")
-
-            elif isinstance(data, list):
-                for item in data:
-                    result = search_annual_balance_data(item)
-                    if result and result.get("date", "") > latest_date:
-                        latest_year = result
-                        latest_date = result.get("date", "")
 
             return latest_year
 
@@ -358,41 +311,33 @@ class DataCalculator:
             return None
 
         def search_ttm_income(data):
-            ttm_income = None
+            # suche quartale
+            quarters = []
+            for income_statements in data:
+                if isinstance(income_statements, dict):
+                    period = income_statements.get("period", "")
+                    if "Q" in period:
+                        if "netIncome" in income_statements and isinstance(income_statements["netIncome"],
+                                                                           (int, float)):
+                            quarters.append({
+                                "date": income_statements.get("date", ""),
+                                "netIncome": float(income_statements["netIncome"])
+                            })
 
-            if isinstance(data, dict):
-                # Suche nach TTM Wert
-                period = data.get("period", "").lower()
+            sorted_quarters = sorted(
+                quarters,
+                key=lambda quarter: quarter["date"],
+                reverse=True
+            )
 
-                if "ttm" in period and "netIncome" in data and isinstance(data["netIncome"], (int, float)):
-                    income_value = float(data["netIncome"])
-                    if income_value != 0:
-                        return income_value
+            ttm_sum = 0
+            most_recent_quarters = sorted_quarters[:4]
+            for quarter in most_recent_quarters:
+                ttm_sum += quarter["netIncome"]
 
-                # Suche in TTM Objekt
-                if "ttm" in data and isinstance(data["ttm"], dict):
-                    ttm_data = data["ttm"]
-                    if "netIncome" in ttm_data and isinstance(ttm_data["netIncome"], (int, float)):
-                        income_value = float(ttm_data["netIncome"])
-                        if income_value != 0:
-                            return income_value
+            return ttm_sum
 
-                # Rekursiv suchen
-                for value in data.values():
-                    if isinstance(value, (dict, list)):
-                        result = search_ttm_income(value)
-                        if result is not None:
-                            return result
-
-            elif isinstance(data, list):
-                for item in data:
-                    result = search_ttm_income(item)
-                    if result is not None:
-                        return result
-
-            return ttm_income
-
-        return search_ttm_income(income_data["fundamentals"])
+        return search_ttm_income(income_data["fundamentals"]["financials"]["income_statement"]["data"])
 
     @staticmethod
     def extract_annual_net_income(income_data: Dict) -> Optional[float]:
@@ -454,18 +399,11 @@ class DataCalculator:
         return search_annual_income(income_data["fundamentals"])
 
     @staticmethod
-    def determine_industry(symbol: str) -> str:
+    def determine_industry(symbol: str, symbols_industry_map: Dict) -> str:
         """Bestimmt Industrie basierend auf Symbol"""
-        symbol_upper = symbol.upper()
-
-        if any(bank in symbol_upper for bank in ["JPM", "BAC", "C", "WFC", "GS", "MS", "DB", "UBS"]):
-            return "Banks - Diversified"
-        elif any(tech in symbol_upper for tech in ["AAPL", "NVDA", "AMD", "INTC", "QCOM", "GOOGL", "GOOG", "META"]):
-            return "Consumer Electronics"
-        elif any(software in symbol_upper for software in ["MSFT", "ORCL", "SAP", "CRM", "ADBE", "INTU", "NOW"]):
-            return "Software - Application"
-        else:
-            return "Unknown"
+        if symbol in symbols_industry_map:
+            return symbols_industry_map[symbol]
+        return "Unknown"
 
 
 def find_latest_financial_data_file(data_dir: str = "data") -> Optional[Path]:
@@ -506,7 +444,8 @@ def main():
     # Daten laden
     with open(data_file, "r") as f:
         raw_data = json.load(f)
-
+    with open("data/known_symbols.json", "r") as f:
+        known_symbols = json.load(f)
     print(f"📊 Analysiere {len(raw_data)} Symbole")
 
     calculator = DataCalculator()
@@ -521,7 +460,7 @@ def main():
         print("-" * 40)
 
         # Industrie bestimmen
-        industry = calculator.determine_industry(symbol)
+        industry = calculator.determine_industry(symbol, known_symbols)
         print(f"Industry: {industry}")
 
         # 1. LATEST Price extrahieren

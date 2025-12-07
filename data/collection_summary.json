@@ -1,13 +1,367 @@
 {
   "total_symbols": 894,
   "collected_symbols": [
-    "AAPL.US",
+    "HSBA.L",
+    "BNC.L",
+    "BARC.L",
+    "NWG.L",
+    "STAN.L",
     "JPM.US",
-    "NVDA.US"
+    "CMC.DE",
+    "SAN.WA",
+    "BAC.US",
+    "NCB.DE",
+    "0Q1F.L",
+    "ICK.VI",
+    "WFC.US",
+    "SHB-A.ST",
+    "NWT.DE",
+    "SHB-B.ST",
+    "EK7.VI",
+    "BAC.SW",
+    "HSBC.US",
+    "CNCB.VI",
+    "BOCN.VI",
+    "HBC1.DE",
+    "WFC.SW",
+    "RY.US",
+    "0QKU.L",
+    "C.US",
+    "TRVC.DE",
+    "MUFG.US",
+    "0R01.L",
+    "UBS.US",
+    "TD.US",
+    "RY-PT.US",
+    "UBSG.SW",
+    "SMFG.US",
+    "SAN.US",
+    "CBA.SW",
+    "SAN.MC",
+    "BSD2.DE",
+    "BMO.US",
+    "BBVA.US",
+    "BOY.DE",
+    "BBVA.MC",
+    "BVA.L",
+    "NU.US",
+    "BNS.US",
+    "0R3T.L",
+    "SANTA.BR",
+    "CM.US",
+    "BCS.US",
+    "X5Z.F",
+    "ING.US",
+    "BCY.DE",
+    "INGA.AS",
+    "INN1.DE",
+    "INGA.SW",
+    "BBV.BR",
+    "NWG.US",
+    "ABN.AS",
+    "CABP.L",
+    "EWBC.US",
+    "SAB.MC",
+    "ALR.WA",
+    "EFGN.SW",
+    "CS.US",
+    "CSGN.SW",
+    "NTB.US",
+    "GOOGL.SW",
+    "SGE.L",
+    "SAP.US",
+    "SAP.DE",
+    "CRM.US",
+    "FOO.F",
+    "FOO.DE",
+    "ADBE.SW",
+    "NOW.US",
+    "UBER.US",
+    "INTU.US",
+    "SHOP.US",
+    "ITU.DE",
+    "307.F",
+    "TRST.L",
+    "APP.US",
+    "KNOS.L",
+    "UBER.SW",
+    "GBG.L",
+    "MSTR.US",
+    "TEAM.US",
+    "0A7O.L",
+    "CDNS.US",
+    "LTG.L",
+    "ATG.L",
+    "ALFA.L",
+    "WDAY.US",
+    "ADSK.US",
+    "SNOW.US",
+    "AUD.DE",
+    "TTD.US",
+    "DSY.PA",
+    "0A3O.L",
+    "DEV.L",
+    "DDOG.US",
+    "CER.L",
+    "CDS.DE",
+    "NCC.L",
+    "FNOX.ST",
+    "FICO.US",
+    "HUBS.US",
+    "PBEE.L",
+    "BIG.L",
+    "IQG.L",
+    "BIDU.SW",
+    "ANSS.US",
+    "SIM.CO",
+    "DOTD.L",
+    "IDOX.L",
+    "TYL.US",
+    "ZM.US",
+    "VIT-B.ST",
+    "5ZM.F",
+    "TRUE-B.ST",
+    "SSNC.US",
+    "WDI.SW",
+    "PTC.US",
+    "ACSO.L",
+    "GRAB.US",
+    "DT.US",
+    "APTD.L",
+    "NET.L",
+    "GWRE.US",
+    "DOCU.US",
+    "0IL6.L",
+    "FFV.DE",
+    "DUOL.US",
+    "KAHOT.OL",
+    "AZPN.US",
+    "MNDY.US",
+    "E3G1.SG",
+    "NEM.DE",
+    "GHT.L",
+    "CTX.DE",
+    "SAAS.L",
+    "BSY.US",
+    "YMM.US",
+    "ESTC.US",
+    "ELCO.L",
+    "PCTY.US",
+    "BKI.US",
+    "PAYC.US",
+    "TRCS.L",
+    "GTLB.US",
+    "MANH.US",
+    "PCOR.US",
+    "XM.US",
+    "EYE.L",
+    "CDAY.US",
+    "NICE.US",
+    "SPE.L",
+    "SPSC.L",
+    "IGP.L",
+    "SPSY.L",
+    "DAY.US",
+    "TRB.L",
+    "DSGX.US",
+    "PEGA.US",
+    "ACP.WA",
+    "RM.L",
+    "TTAN.US",
+    "CLBS.L",
+    "NATI.US",
+    "SMAR.US",
+    "VERX.US",
+    "CVLT.US",
+    "U.US",
+    "ACC.L",
+    "APPF.US",
+    "WAND.L",
+    "OTEX.US",
+    "AOM.L",
+    "SPA.L",
+    "OMG.L",
+    "D4T4.L",
+    "BETCO.ST",
+    "CWAN.US",
+    "NEMA.SW",
+    "SRAD.US",
+    "RUM.US",
+    "BILL.US",
+    "PULS.L",
+    "COUP.US",
+    "VOLUE.OL",
+    "INTA.US",
+    "TEMN.SW",
+    "QTWO.US",
+    "SOUN.US",
+    "QXO.US",
+    "0U3Q.L",
+    "IDCC.US",
+    "FRSH.US",
+    "LYFT.US",
+    "ASAN.US",
+    "ZETA.US",
+    "WK.US",
+    "LIME.ST",
+    "PEXIP.OL",
+    "ALTTU.PA",
+    "SMCRT.OL",
+    "KC.US",
+    "BRZE.US",
+    "CVT.US",
+    "GBTG.US",
+    "FROG.US",
+    "COMP.US",
+    "PYCR.US",
+    "BLKB.US",
+    "NCNO.US",
+    "DV.US",
+    "LVC.WA",
+    "PWSC.US",
+    "CBRAIN.CO",
+    "0DWV.L",
+    "UTDI.SW",
+    "SKL.L",
+    "ALIT.US",
+    "ZI.US",
+    "AYX.US",
+    "ENV.US",
+    "INST.US",
+    "US44891N2080.SG",
+    "ALKT.US",
+    "CHSS.L",
+    "GRND.US",
+    "BL.US",
+    "RNG.US",
+    "BTDR.US",
+    "ALRM.US",
+    "CLSK.US",
+    "M8G.ST",
+    "ZOO.L",
+    "GETB.L",
+    "CALX.US",
+    "0OA4.L",
+    "VU.PA",
+    "SEMR.US",
+    "ASE.WA",
+    "SMRT.L",
+    "CRTA.L",
+    "VRC.WA",
+    "DCT.US",
+    "PRGS.US",
+    "ESYS.L",
+    "PAR.US",
+    "CXM.US",
+    "SIGNUP.ST",
+    "AGYS.US",
+    "YOU.US",
+    "QTCOM.HE",
+    "NATL.US",
+    "ABS.WA",
+    "JAMF.US",
+    "LSPD.US",
+    "PLNW.PA",
+    "IBTA.US",
+    "TEK.L",
+    "TMV.DE",
+    "ENEA.ST",
+    "SPT.US",
+    "ALT.L",
+    "BIRD.L",
+    "AOF.DE",
+    "IAR-B.ST",
+    "PLUS.US",
+    "CINT.ST",
+    "DBD.US",
+    "PD.US",
+    "SEYE.ST",
+    "UPBD.US",
+    "MTTR.US",
+    "ALESK.PA",
+    "CKT.L",
+    "AMPL.US",
+    "CRDL.L",
+    "TXT.WA",
+    "KARO.US",
+    "SPNS.US",
+    "EVBG.US",
+    "MLNK.US",
+    "ARC.L",
+    "MNTV.US",
+    "FSLY.US",
+    "WBTN.US",
+    "DAVE.US",
+    "ADEA.US",
+    "0M2A.L",
+    "WKME.US",
+    "ITIM.L",
+    "PRO.US",
+    "FPIP.ST",
+    "DCBO.US",
+    "WEAV.US",
+    "OPFI.US",
+    "RKET.HM",
+    "PEN.L",
+    "MODN.US",
+    "OLO.US",
+    "VTEX.US",
+    "SHO.WA",
+    "VMEO.US",
+    "4GBL.L",
+    "PDFS.US",
+    "LSS.PA",
+    "ENFN.US",
+    "MSAB-B.ST",
+    "0QYR.L",
+    "AAPL.US",
+    "APC.F",
+    "APC.DE",
+    "SMSD.L",
+    "SMSN.L",
+    "BC94.L",
+    "SSUN.F",
+    "SSUN.VI",
+    "SSU.VI",
+    "SONY.US",
+    "3CP.F",
+    "EMR.SW",
+    "RWL.DE",
+    "VID.L",
+    "WIN.SW",
+    "LPL.US",
+    "VZIO.US",
+    "BO.CO",
+    "SONO.US",
+    "HTJ.F"
   ],
-  "collection_date": "20251206_193445",
+  "collection_date": "20251207_184547",
   "data_structure": {
-    "AAPL.US": [
+    "HSBA.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BNC.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BARC.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NWG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "STAN.L": [
       "eod",
       "income_statement",
       "balance_sheet_statement",
@@ -19,7 +373,1957 @@
       "balance_sheet_statement",
       "cash_flow_statement"
     ],
-    "NVDA.US": [
+    "CMC.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAN.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BAC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NCB.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0Q1F.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ICK.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WFC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SHB-A.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NWT.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SHB-B.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EK7.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BAC.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "HSBC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CNCB.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BOCN.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "HBC1.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WFC.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0QKU.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "C.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TRVC.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MUFG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0R01.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UBS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RY-PT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UBSG.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMFG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CBA.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAN.MC": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BSD2.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BMO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BBVA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BOY.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BBVA.MC": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BVA.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NU.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BNS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0R3T.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SANTA.BR": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BCS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "X5Z.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ING.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BCY.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INGA.AS": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INN1.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INGA.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BBV.BR": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NWG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ABN.AS": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CABP.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EWBC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAB.MC": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALR.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EFGN.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CSGN.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NTB.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GOOGL.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SGE.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAP.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAP.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CRM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FOO.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FOO.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ADBE.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NOW.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UBER.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INTU.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SHOP.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ITU.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "307.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TRST.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "APP.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "KNOS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UBER.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GBG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MSTR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TEAM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0A7O.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CDNS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LTG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ATG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALFA.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WDAY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ADSK.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SNOW.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AUD.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TTD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DSY.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0A3O.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DEV.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DDOG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CER.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CDS.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NCC.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FNOX.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FICO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "HUBS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PBEE.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BIG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IQG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BIDU.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ANSS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SIM.CO": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DOTD.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IDOX.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TYL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ZM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VIT-B.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "5ZM.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TRUE-B.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SSNC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WDI.SW": [
+      "eod"
+    ],
+    "PTC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ACSO.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GRAB.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "APTD.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NET.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GWRE.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DOCU.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0IL6.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FFV.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DUOL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "KAHOT.OL": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AZPN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MNDY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "E3G1.SG": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NEM.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GHT.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CTX.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SAAS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BSY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "YMM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ESTC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ELCO.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PCTY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BKI.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PAYC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TRCS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GTLB.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MANH.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PCOR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "XM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EYE.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CDAY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NICE.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPE.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPSC.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IGP.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPSY.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DAY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TRB.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DSGX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PEGA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ACP.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RM.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TTAN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CLBS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NATI.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMAR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VERX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CVLT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "U.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ACC.L": [
+      "eod"
+    ],
+    "APPF.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WAND.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "OTEX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AOM.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPA.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "OMG.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "D4T4.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BETCO.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CWAN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NEMA.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SRAD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RUM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BILL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PULS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "COUP.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VOLUE.OL": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INTA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TEMN.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "QTWO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SOUN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "QXO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0U3Q.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IDCC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FRSH.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LYFT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ASAN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ZETA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WK.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LIME.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PEXIP.OL": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALTTU.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMCRT.OL": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "KC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BRZE.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CVT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GBTG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FROG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "COMP.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PYCR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BLKB.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NCNO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DV.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LVC.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PWSC.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CBRAIN.CO": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0DWV.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UTDI.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SKL.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALIT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ZI.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AYX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ENV.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "INST.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "US44891N2080.SG": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALKT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CHSS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GRND.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RNG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BTDR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALRM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CLSK.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "M8G.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ZOO.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "GETB.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CALX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0OA4.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VU.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SEMR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ASE.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMRT.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CRTA.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VRC.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DCT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PRGS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ESYS.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PAR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CXM.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SIGNUP.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AGYS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "YOU.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "QTCOM.HE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "NATL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ABS.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "JAMF.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LSPD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PLNW.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IBTA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TEK.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TMV.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ENEA.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPT.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALT.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BIRD.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AOF.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "IAR-B.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PLUS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CINT.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DBD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SEYE.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "UPBD.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MTTR.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ALESK.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CKT.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AMPL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "CRDL.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "TXT.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "KARO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SPNS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EVBG.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MLNK.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ARC.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MNTV.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FSLY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WBTN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DAVE.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ADEA.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0M2A.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WKME.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ITIM.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PRO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "FPIP.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "DCBO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WEAV.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "OPFI.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RKET.HM": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PEN.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MODN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "OLO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VTEX.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SHO.WA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VMEO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "4GBL.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "PDFS.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LSS.PA": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "ENFN.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "MSAB-B.ST": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "0QYR.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "AAPL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "APC.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "APC.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMSD.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SMSN.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BC94.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SSUN.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SSUN.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SSU.VI": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SONY.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "3CP.F": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "EMR.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "RWL.DE": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VID.L": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "WIN.SW": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "LPL.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "VZIO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "BO.CO": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "SONO.US": [
+      "eod",
+      "income_statement",
+      "balance_sheet_statement",
+      "cash_flow_statement"
+    ],
+    "HTJ.F": [
       "eod",
       "income_statement",
       "balance_sheet_statement",

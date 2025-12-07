@@ -24,7 +24,7 @@ except ImportError as e:
 class DataStorage:
     """Klasse für das Speichern der berechneten Daten in der Datenbank"""
 
-    def __init__(self, database_url: str = "sqlite:///fiindo_challenge.db"):
+    def __init__(self, database_url: str = "sqlite:///data/fiindo_challenge.db"):
         """Initialisiert die Datenbankverbindung"""
         self.database_url = database_url
         self.engine = create_engine(database_url, echo=False)
@@ -334,7 +334,7 @@ class DataStorage:
         try:
             # Für SQLite: Kopiere die Datenbankdatei
             if "sqlite" in self.database_url:
-                db_file = Path("fiindo_challenge.db")
+                db_file = Path("data/fiindo_challenge.db")
                 if db_file.exists():
                     shutil.copy2(db_file, backup_file)
                     print(f"✅ Database backed up to: {backup_file}")
@@ -361,7 +361,7 @@ def main():
         print("\n🔧 DATABASE SETUP")
         print("-" * 40)
 
-        if not Path("fiindo_challenge.db").exists():
+        if not Path("data/fiindo_challenge.db").exists():
             print("📁 Creating new database...")
             storage.create_database()
         else:

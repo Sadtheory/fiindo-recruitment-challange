@@ -10,7 +10,7 @@ def check_database():
     print("🔍 Checking database content...")
 
     try:
-        conn = sqlite3.connect('fiindo_challenge.db')
+        conn = sqlite3.connect('data/fiindo_challenge.db')
         cursor = conn.cursor()
 
         # 1. Tabellen auflisten
