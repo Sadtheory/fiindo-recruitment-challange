@@ -1,5 +1,3 @@
-# step2_calculations.py
-
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -402,11 +400,28 @@ class DataCalculator:
         if not income_data or "fundamentals" not in income_data:
             return None
 
+        def income_statement_data_newer_than_previous(income_statement_data, previous_income_statement_data):
+            if previous_income_statement_data is None:
+                return True
+            return int(previous_income_statement_data["calendarYear"]) <= int(income_statement_data["calendarYear"])
+
+        def get_newest_year(data_list):
+            newest_year = None
+            for data in data_list:
+                if "period" in data and data["period"] == "FY":
+                    if income_statement_data_newer_than_previous(data, newest_year):
+                        newest_year = data
+            if newest_year is not None:
+                return newest_year["netIncome"]
+            return False
+
+        get_newest_year(income_data["fundamentals"]["financials"]["income_statement"]["data"])
+
         def search_annual_income(data):
             if isinstance(data, dict):
                 # Suche nach Jahresdaten
                 period = data.get("period", "").lower()
-                if "annual" in period or "year" in period:
+                if period == "FY":
                     if "netIncome" in data and isinstance(data["netIncome"], (int, float)):
                         income_value = float(data["netIncome"])
                         if income_value != 0:
@@ -595,14 +610,18 @@ def main():
         pe_ratio = None
         eps_for_pe = None
 
-        # Priorität 1: EPS TTM verwenden
-        if latest_price and eps_data["eps_ttm"] and eps_data["eps_ttm"] != 0:
+        # 1. PE Ratio: Price-to-Earnings ratio (mit EPS)
+        pe_ratio = None
+        eps_for_pe = None
+
+        # Priorität 1: EPS TTM verwenden (sicherer Zugriff mit .get())
+        if latest_price and eps_data.get("eps_ttm") and eps_data["eps_ttm"] != 0:
             eps_for_pe = eps_data["eps_ttm"]
             pe_ratio = latest_price / eps_for_pe
             print(f"PE Ratio (using EPS TTM): ${latest_price:.2f} / ${eps_for_pe:.2f} = {pe_ratio:.2f}")
 
         # Priorität 2: EPS Annual verwenden
-        elif latest_price and eps_data["eps_annual"] and eps_data["eps_annual"] != 0:
+        elif latest_price and eps_data.get("eps_annual") and eps_data["eps_annual"] != 0:
             eps_for_pe = eps_data["eps_annual"]
             pe_ratio = latest_price / eps_for_pe
             print(f"PE Ratio (using EPS Annual): ${latest_price:.2f} / ${eps_for_pe:.2f} = {pe_ratio:.2f}")
