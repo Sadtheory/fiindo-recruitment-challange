@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 # Füge src-Verzeichnis zum Python-Pfad hinzu
-sys.path.append('src')
+sys.path.append('')
 
 from sqlalchemy import create_engine
 from models import Base
@@ -15,7 +15,7 @@ def setup_database():
     print("🔧 Setting up database...")
 
     # Erstelle src-Verzeichnis falls nicht vorhanden
-    src_dir = Path("src")
+    src_dir = Path("")
     src_dir.mkdir(exist_ok=True)
 
     # Überprüfe ob models.py existiert
@@ -26,7 +26,7 @@ def setup_database():
         return
 
     # Erstelle Datenbank
-    engine = create_engine("sqlite:///fiindo_challenge.db", echo=True)
+    engine = create_engine("sqlite:///data/fiindo_challenge.db", echo=True)
 
     try:
         Base.metadata.create_all(engine)

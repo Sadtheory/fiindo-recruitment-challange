@@ -1,83 +1,224 @@
-# Fiindo Recruitment Challenge
 
-This repository contains a coding challenge for fiindo candidates. Candidates should fork this repository and implement their solution based on the requirements below.
+# Fiindo Recruitment Challenge – ETL Solution
 
-## Challenge Overview
+This repository contains my implementation of the **Fiindo Recruitment Challenge**, which requires building a complete ETL (Extract–Transform–Load) workflow:
 
-Create a data processing application that:
-- Fetches financial data from an API
-- Performs calculations on stock ticker data
-- Saves results to a SQLite database
+1. **Fetch** financial data from the Fiindo API  
+2. **Transform & calculate** ticker statistics and industry aggregations  
+3. **Store** processed results into an SQLite database  
 
-## Technical Requirements
+The solution is fully structured, documented, and ready for review.
 
-### Input
-- **API Endpoint**: `https://api.test.fiindo.com` (docs: `https://api.test.fiindo.com/api/v1/docs/`)
-- **Authentication**: Use header `Auhtorization: Bearer {first_name}.{last_name}` with every request. Anything else WILL BE IGNORED. No other format or value will be accepted.
-- **Template**: This forked repository as starting point
+---
 
-### Output
-- **Database**: SQLite database with processed financial data
-- **Tables**: Individual ticker statistics and industry aggregations
+# 📂 Project Structure
 
-## Process Steps
+```
+fiindo-recruitment-challenge/
+│
+├── src/
+│   ├── step1_fetch.py              # Fetches data from Fiindo API
+│   ├── step2_transform.py          # Calculates all statistics
+│   ├── step3_load.py               # Stores data in SQLite DB
+│   ├── models.py                   # SQLAlchemy models
+│
+├── data/                           # JSON input/output data
+├── db/                             # SQLite database directory
+├── alembic/                        # Database migrations
+│
+├── README.md
+├── requirements.txt
+├── Dockerfile
+├── docker-compose.yml
+└── .env                            # Contains credentials
+```
 
-### 1. Data Collection
-- Connect to the Fiindo API
-- Authenticate using your identifier `Auhtorization: Bearer {first_name}.{last_name}`
-- Fetch financial data
+---
 
-### 2. Data Calculations
+# 🚀 Features
 
-Calculate data for symbols only from those 3 industries:
-  - `Banks - Diversified`
-  - `Software - Application`
-  - `Consumer Electronics`
+### ✔ Fully working ETL pipeline  
+### ✔ Automatic statistics calculation:  
+- PE Ratio  
+- Revenue Growth (quarter vs quarter)  
+- Net Income TTM  
+- Debt-to-Equity Ratio  
 
-#### Per Ticker Statistics
-- **PE Ratio**: Price-to-Earnings ratio calculation from last quarter
-- **Revenue Growth**: Quarter-over-quarter revenue growth (Q-1 vs Q-2)
-- **NetIncomeTTM**: Trailing twelve months net income
-- **DebtRatio**: Debt-to-equity ratio from last year
+### ✔ Industry aggregations:  
+- Average PE Ratio  
+- Average Revenue Growth  
+- Total Revenue  
+- Ticker count  
 
-#### Industry Aggregation
-- **Average PE Ratio**: Mean PE ratio across all tickers in each industry
-- **Average Revenue Growth**: Mean revenue growth across all tickers in each industry
-- **Sum of Revenue**: Sum revenue across all tickers in each industry
+### ✔ SQLite database storage  
+### ✔ SQLAlchemy ORM  
+### ✔ Optional Docker support  
+### ✔ Clear logs & error handling
 
-### 3. Data Storage
-- Design appropriate database schema
-- Save individual ticker statistics
-- Save aggregated industry data
+---
 
-## Database Setup
+# 🔧 Setup Instructions
 
-### Database Files
-- `fiindo_challenge.db`: SQLite database file
-- `models.py`: SQLAlchemy model definitions (can be divided into separate files if needed)
-- `alembic/`: Database migration management
+## 1️⃣ Install Python Dependencies
 
-## Getting Started
+```bash
+  pip install -r requirements.txt
+```
 
-1. **Fork this repository** to your GitHub account
-3. **Implement the solution** following the process steps outlined above 
+---
 
-## Deliverables
+## 2️⃣ Create `.env` file
 
-Your completed solution should include:
-- Working application that fetches data from the API
-- SQLite database with calculated results
-- Clean, documented code
-- README with setup and run instructions
+Your `.env` must contain:
 
-## Bonus Points
+```
+FIRST_NAME=yourfirstname
+LAST_NAME=yourlastname
+```
 
-### Dockerization
-- Containerize your solution using Docker
-- Create a `Dockerfile` and `docker-compose.yml`
+Authentication is:
 
-### Unit Testing
-- Write comprehensive unit tests for ETL part your solution
+```
+Authorization: Bearer {FIRST_NAME}.{LAST_NAME}
+```
 
+---
 
-Good luck with your implementation!
+## 3️⃣ Ensure folders exist
+
+```bash
+  mkdir -p data db
+```
+
+---
+
+# ▶️ How to Run the ETL Pipeline
+
+Run **each step in order**:
+
+---
+
+## STEP 1 – Fetch API Data
+
+```bash
+  python src/step1_fetch.py
+```
+
+This will:
+
+✔ Authenticate with the Fiindo API  
+✔ Fetch all required financial data  
+✔ Save raw JSON → `data/financial_data_YYYYMMDD_HHMMSS.json`
+
+---
+
+## STEP 2 – Transform & Calculate Metrics
+
+```bash
+  python src/step2_transform.py
+```
+
+This will:
+
+✔ Load the latest financial data  
+✔ Calculate all ticker-level statistics  
+✔ Calculate industry-level aggregations  
+✔ Save results into:
+
+```
+data/ticker_statistics_*.json
+data/industry_aggregation_*.json
+```
+
+---
+
+## STEP 3 – Store Data in SQLite Database
+
+```bash
+  python src/step3_load.py
+```
+
+This will:
+
+✔ Create database (if not exists)  
+✔ Populate ticker_statistics table  
+✔ Populate industry_aggregation table  
+✔ Display database summary  
+✔ Optionally create a DB backup  
+
+Database file:
+
+```
+db/fiindo_challenge.db
+```
+
+---
+
+# 🐳 Running with Docker (Optional)
+
+## Build the container:
+
+```bash
+  docker build -t fiindo-etl .
+```
+
+## Run with docker-compose:
+
+```bash
+  docker-compose up --build
+```
+
+This will:
+
+✔ Install dependencies  
+✔ Run the ETL pipeline  
+✔ Persist data in mounted volumes  
+
+---
+
+# 🧪 (Bonus) Unit Tests
+
+Run tests:
+
+```bash
+  pytest -v
+```
+
+The tests cover:
+
+- ETL steps  
+- Transform logic  
+- Database storage utilities  
+
+---
+
+# 📊 How to Inspect the Database
+
+Open SQLite:
+
+```bash
+  sqlite3 db/fiindo_challenge.db
+```
+
+Useful commands:
+
+```sql
+.tables
+SELECT * FROM ticker_statistics LIMIT 5;
+SELECT * FROM industry_aggregation;
+```
+
+---
+
+# 📝 Notes
+
+- Only tickers from these industries are processed:  
+  - Banks – Diversified  
+  - Software – Application  
+  - Consumer Electronics  
+- All other industries are ignored (per challenge specification).  
+- All paths are configured to work whether executed from project root or `/src`.
+
+---
+
+If you have any questions, feel free to ask!

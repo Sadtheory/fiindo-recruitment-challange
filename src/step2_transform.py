@@ -1,3 +1,13 @@
+# step2_transform.py
+# ------------------
+# This script loads the latest financial_data_*.json file from a "data" directory.
+# If you run this script from the src/ directory, either:
+#     a) run it from the project root: `python src/step2_transform.py` (recommended), OR
+#     b) call find_latest_financial_data_file(data_dir="../data") to point to the parent data folder.
+#
+# Author: Cynthia Kraft
+# Date: 2025-12-08
+
 import json
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -8,6 +18,20 @@ from datetime import datetime
 
 @dataclass
 class TickerStatistics:
+    """
+    Dataclass representing per-ticker computed statistics.
+
+    Fields:
+        symbol: ticker symbol string
+        industry: industry string (should match known_symbols mapping)
+        pe_ratio: calculated PE ratio (float) or None
+        revenue_growth: QoQ revenue growth in percent (float) or None
+        net_income_ttm: trailing twelve months net income (float) or None
+        debt_ratio: debt-to-equity ratio (float) or None
+        revenue: last quarter revenue (float) or None
+        price: latest price (float) or None
+        eps: EPS value used for PE calculation (float) or None
+    """
     symbol: str
     industry: str
     pe_ratio: Optional[float] = None
@@ -21,6 +45,16 @@ class TickerStatistics:
 
 @dataclass
 class IndustryAggregation:
+    """
+    Dataclass representing aggregated metrics for an industry.
+
+    Fields:
+        industry: industry name
+        avg_pe_ratio: mean PE ratio across tickers (None if no data)
+        avg_revenue_growth: mean revenue growth percentage (None if no data)
+        sum_revenue: sum of revenues across tickers (None if no data)
+        ticker_count: number of tickers included in the aggregation
+    """
     industry: str
     avg_pe_ratio: Optional[float] = None
     avg_revenue_growth: Optional[float] = None
@@ -29,21 +63,37 @@ class IndustryAggregation:
 
 
 class DataCalculator:
-    """Calculator für die spezifizierten Berechnungen"""
+    """
+    Helper class containing static methods for extracting and calculating
+    financial values from the raw JSON that Step 1 produced.
+
+    This class encapsulates many defensive parsing routines because the Fiindo
+    test API returns inconsistent shapes in some places. Each method returns
+    best-effort values or None when the required data cannot be extracted.
+    """
 
     @staticmethod
     def extract_latest_price(eod_data: Dict) -> Optional[float]:
-        """Extrahiert NEUESTEN Preis aus EOD Daten (letzter Eintrag in Liste)"""
+        """
+        Extract the latest (most recent) close price from EOD data.
+
+        The EOD JSON generally contains a structure like:
+        {"stockprice": {"data": [{"close": X, ...}, ...] } }
+
+        This function:
+        - returns None if eod_data is falsy
+        - safely traverses nested keys and returns the 'close' value of the last list item
+        """
         if not eod_data:
             return None
 
-        # Preis ist in stockprice.data[LAST].close
+        # Price is expected at stockprice.data[-1].close
         if "stockprice" in eod_data:
             stockprice = eod_data["stockprice"]
             if isinstance(stockprice, dict) and "data" in stockprice:
                 data = stockprice["data"]
                 if isinstance(data, list) and len(data) > 0:
-                    # Nimm den LETZTEN (neuesten) Eintrag
+                    # Choose the last (most recent) entry
                     last_item = data[-1]
                     if isinstance(last_item, dict) and "close" in last_item:
                         return float(last_item["close"])
@@ -52,7 +102,15 @@ class DataCalculator:
 
     @staticmethod
     def find_latest_quarter(income_data: Dict) -> Optional[Dict]:
-        """Findet das neueste Quartal in den Finanzdaten"""
+        """
+        Find and return the latest quarterly income statement entry.
+
+        The function looks for an entry whose 'period' or 'date' indicates a quarter.
+        It iterates over income_statement entries and selects the one with the greatest date string.
+
+        Returns:
+            The dictionary for the latest quarter, or None if not found.
+        """
         if not income_data or "fundamentals" not in income_data:
             return None
 
@@ -61,25 +119,25 @@ class DataCalculator:
             latest_date = ""
 
             if isinstance(data, dict):
-                # Suche nach income_statement data
+                # Attempt to locate income_statement => data (list)
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        # Gehe durch alle Einträge und identifiziere Quartale
+                        # Iterate all items and find quarter-like entries
                         for item in income_stmt["data"]:
                             if isinstance(item, dict):
-                                # Prüfe ob es ein Quartal ist
+                                # Guard extraction of fields used to decide "quarter-ness"
                                 period = item.get("period", "").lower()
                                 date = item.get("date", "")
 
-                                # Quartal erkennen
+                                # Heuristic: treat entries as quarterly if period looks like Q or has a date
                                 is_quarter = ("quarter" in period or
                                               "q" in period or
                                               "qtr" in period or
                                               (date and len(date) >= 7))
 
                                 if is_quarter:
-                                    # Vergleiche Datum
+                                    # Use lexicographic date comparison to find the latest
                                     if date > latest_date:
                                         latest_date = date
                                         latest_quarter = item
@@ -90,7 +148,12 @@ class DataCalculator:
 
     @staticmethod
     def find_previous_quarter(income_data: Dict, latest_quarter_date: str) -> Optional[Dict]:
-        """Findet das vorherige Quartal zum gegebenen Datum"""
+        """
+        Find the previous quarter entry (the quarter immediately before latest_quarter_date).
+
+        The function returns the most recent quarter with `date < latest_quarter_date`.
+        If none found, returns None.
+        """
         if not income_data or "fundamentals" not in income_data:
             return None
 
@@ -102,7 +165,7 @@ class DataCalculator:
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "data" in income_stmt and isinstance(income_stmt["data"], list):
-                        # Gehe durch alle Einträge
+                        # Iterate all entries
                         for item in income_stmt["data"]:
                             if isinstance(item, dict):
                                 period = item.get("period", "").lower()
@@ -113,7 +176,7 @@ class DataCalculator:
                                               "qtr" in period or
                                               (date and len(date) >= 7))
 
-                                # Finde Quartal, das vor dem neuesten liegt
+                                # Find quarter with date < latest_quarter_date and maximum date among those
                                 if is_quarter and date and date < latest_quarter_date:
                                     if date > previous_date:
                                         previous_date = date
@@ -125,7 +188,12 @@ class DataCalculator:
 
     @staticmethod
     def extract_last_quarter_financials(income_data: Dict) -> Tuple[Optional[float], Optional[float], Optional[float]]:
-        """Extrahiert Revenue, Net Income und EPS für das neueste Quartal"""
+        """
+        Extract revenue, net income and EPS from the latest quarter.
+
+        Returns:
+            Tuple of (revenue, net_income, eps) where each element is either a float or None.
+        """
         revenue = None
         net_income = None
         eps = None
@@ -139,12 +207,12 @@ class DataCalculator:
             if "netIncome" in latest_quarter and isinstance(latest_quarter["netIncome"], (int, float)):
                 net_income = float(latest_quarter["netIncome"])
 
-            # EPS Werte aus dem Quartal extrahieren
+            # extract EPS using a preference list of possible keys
             eps_keys = ["eps", "epsdiluted", "earningsPerShare", "earningsPerShareDiluted"]
             for key in eps_keys:
                 if key in latest_quarter and isinstance(latest_quarter[key], (int, float)):
                     eps_value = float(latest_quarter[key])
-                    if eps_value != 0:  # Ignoriere 0-Werte
+                    if eps_value != 0:  # ignore zero EPS values
                         eps = eps_value
                         break
 
@@ -152,20 +220,26 @@ class DataCalculator:
 
     @staticmethod
     def extract_revenue_for_growth_calculation(income_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Revenue für aktuelles (neuestes) und vorheriges Quartal"""
-        revenue_q2 = None  # Neuestes Quartal
-        revenue_q1 = None  # Vorheriges Quartal
+        """
+        Extract revenue values for the current (latest) and previous quarter.
+
+        Returns:
+            (revenue_q2, revenue_q1) where revenue_q2 is the latest quarter revenue
+            and revenue_q1 is the previous quarter revenue.
+        """
+        revenue_q2 = None  # latest quarter
+        revenue_q1 = None  # previous quarter
 
         latest_quarter = DataCalculator.find_latest_quarter(income_data)
 
         if latest_quarter:
             latest_date = latest_quarter.get("date", "")
 
-            # Revenue für neuestes Quartal
+            # revenue for latest quarter
             if "revenue" in latest_quarter and isinstance(latest_quarter["revenue"], (int, float)):
                 revenue_q2 = float(latest_quarter["revenue"])
 
-            # Suche vorheriges Quartal
+            # find the previous quarter and extract revenue
             previous_quarter = DataCalculator.find_previous_quarter(income_data, latest_date)
 
             if previous_quarter:
@@ -176,7 +250,12 @@ class DataCalculator:
 
     @staticmethod
     def find_latest_year_balance(balance_data: Dict) -> Optional[Dict]:
-        """Findet die neuesten Jahresdaten in der Bilanz"""
+        """
+        Find the most recent annual balance-sheet entry.
+
+        Looks for entries where the period or date indicates a fiscal year (annual/FY),
+        or where the date contains '-12-' or is a 4-digit year.
+        """
         if not balance_data or "fundamentals" not in balance_data:
             return None
 
@@ -188,13 +267,13 @@ class DataCalculator:
                 if "financials" in data and "balance_sheet_statement" in data["financials"]:
                     balance_stmt = data["financials"]["balance_sheet_statement"]
                     if "data" in balance_stmt and isinstance(balance_stmt["data"], list):
-                        # Gehe durch alle Einträge
+                        # Iterate entries to find annual ones
                         for item in balance_stmt["data"]:
                             if isinstance(item, dict):
                                 period = item.get("period", "").lower()
                                 date = item.get("date", "")
 
-                                # Jahresdaten erkennen
+                                # Heuristics for annual rows
                                 is_annual = ("annual" in period or
                                              "year" in period or
                                              "fy" in period or
@@ -211,7 +290,12 @@ class DataCalculator:
 
     @staticmethod
     def extract_last_year_debt_equity(balance_data: Dict) -> Tuple[Optional[float], Optional[float]]:
-        """Extrahiert Debt und Equity für das neueste Jahr"""
+        """
+        Extract total debt and total equity from the latest annual balance sheet entry.
+
+        Returns:
+            Tuple (debt, equity) where each is float or None.
+        """
         debt = None
         equity = None
 
@@ -228,7 +312,18 @@ class DataCalculator:
 
     @staticmethod
     def extract_eps_values(income_data: Dict) -> Dict[str, Optional[float]]:
-        """Extrahiert verschiedene EPS Werte aus den Finanzdaten"""
+        """
+        Recursively search for EPS values in the income_data structure.
+
+        The returned dict contains multiple EPS variants if found:
+            - eps_ttm
+            - eps_annual
+            - eps_quarterly
+            - eps_diluted
+
+        The function prefers non-zero values and aggregates results found
+        at different nesting levels.
+        """
         eps_data = {
             "eps_ttm": None,
             "eps_annual": None,
@@ -240,10 +335,14 @@ class DataCalculator:
             return eps_data
 
         def search_eps(data):
+            """
+            Internal recursive helper that walks dicts and lists to find EPS-like keys.
+            It tries a number of candidate keys and also inspects 'period' hints.
+            """
             found_eps = {}
 
             if isinstance(data, dict):
-                # EPS Schlüssel
+                # Candidate keys mapped to types
                 eps_keys = {
                     "eps": "quarterly",
                     "epsdiluted": "diluted",
@@ -253,14 +352,14 @@ class DataCalculator:
                     "epsAnnual": "annual"
                 }
 
-                # Suche nach EPS Werten
+                # Check direct keys first
                 for key, eps_type in eps_keys.items():
                     if key in data and isinstance(data[key], (int, float)):
                         eps_value = float(data[key])
                         if eps_value != 0:
                             found_eps[eps_type] = eps_value
 
-                # Perioden-spezifische Suche
+                # Use period hints to map eps found in period-specific entries
                 period = data.get("period", "").lower()
 
                 if "ttm" in period and "eps" in data and isinstance(data["eps"], (int, float)):
@@ -273,7 +372,7 @@ class DataCalculator:
                     if eps_value != 0:
                         found_eps["annual"] = eps_value
 
-                # Rekursiv suchen
+                # Recurse into nested structures
                 for value in data.values():
                     if isinstance(value, (dict, list)):
                         sub_results = search_eps(value)
@@ -292,7 +391,7 @@ class DataCalculator:
 
         eps_results = search_eps(income_data["fundamentals"])
 
-        # Zuordnung zu unserer Struktur
+        # Map whatever we found into the standardized eps_data structure
         if "ttm" in eps_results:
             eps_data["eps_ttm"] = eps_results["ttm"]
         if "annual" in eps_results:
@@ -306,12 +405,19 @@ class DataCalculator:
 
     @staticmethod
     def extract_net_income_ttm(income_data: Dict) -> Optional[float]:
-        """Extrahiert Net Income für die letzten 12 Monate (TTM)"""
+        """
+        Compute Net Income for the trailing twelve months by summing the most recent four quarters' netIncome.
+
+        The function expects the income data list to be passed in a way similar to:
+            income_data["fundamentals"]["financials"]["income_statement"]["data"]
+
+        It returns the sum (float). If the data shape is different, this method may fail or return 0.
+        """
         if not income_data or "fundamentals" not in income_data:
             return None
 
         def search_ttm_income(data):
-            # suche quartale
+            # gather quarter netIncome entries
             quarters = []
             for income_statements in data:
                 if isinstance(income_statements, dict):
@@ -324,6 +430,7 @@ class DataCalculator:
                                 "netIncome": float(income_statements["netIncome"])
                             })
 
+            # sort descending by date, take the most recent 4 quarters
             sorted_quarters = sorted(
                 quarters,
                 key=lambda quarter: quarter["date"],
@@ -341,7 +448,12 @@ class DataCalculator:
 
     @staticmethod
     def extract_annual_net_income(income_data: Dict) -> Optional[float]:
-        """Extrahiert jährliches Net Income"""
+        """
+        Find annual net income.
+
+        This method contains two approaches: (1) check for FY periods, (2) check for 'annual' blocks
+        under income_statement. The function attempts to return the most recent non-zero annual net income.
+        """
         if not income_data or "fundamentals" not in income_data:
             return None
 
@@ -360,18 +472,20 @@ class DataCalculator:
                 return newest_year["netIncome"]
             return False
 
+        # Attempt to derive new year's net income (side-effect call; return is ignored)
         get_newest_year(income_data["fundamentals"]["financials"]["income_statement"]["data"])
 
         def search_annual_income(data):
             if isinstance(data, dict):
-                # Suche nach Jahresdaten
+                # Check node's period
                 period = data.get("period", "").lower()
-                if period == "FY":
+                if period == "fy":
                     if "netIncome" in data and isinstance(data["netIncome"], (int, float)):
                         income_value = float(data["netIncome"])
                         if income_value != 0:
                             return income_value
 
+                # Fallback: check for 'financials' -> 'income_statement' -> 'annual'
                 if "financials" in data and "income_statement" in data["financials"]:
                     income_stmt = data["financials"]["income_statement"]
                     if "annual" in income_stmt and isinstance(income_stmt["annual"], dict):
@@ -381,7 +495,7 @@ class DataCalculator:
                             if income_value != 0:
                                 return income_value
 
-                # Rekursiv suchen
+                # Recurse into nested dicts/lists
                 for value in data.values():
                     if isinstance(value, (dict, list)):
                         result = search_annual_income(value)
@@ -400,39 +514,55 @@ class DataCalculator:
 
     @staticmethod
     def determine_industry(symbol: str, symbols_industry_map: Dict) -> str:
-        """Bestimmt Industrie basierend auf Symbol"""
+        """
+        Return the industry for a symbol based on the known_symbols mapping.
+        If the symbol is not present, return "Unknown".
+        """
         if symbol in symbols_industry_map:
             return symbols_industry_map[symbol]
         return "Unknown"
 
 
 def find_latest_financial_data_file(data_dir: str = "data") -> Optional[Path]:
-    """Findet die neueste financial_data Datei im data-Verzeichnis"""
+    """
+    Find the latest financial_data_*.json file in the provided data directory.
+
+    This modification allows running the script either:
+    - from the project root, OR
+    - from the src/ directory
+
+    It first tries "data/", then "../data/".
+    """
+
+    # Allow execution from project root or from src/
     data_path = Path(data_dir)
+    if not data_path.exists():
+        data_path = Path("../" + data_dir)
 
     if not data_path.exists():
         print(f"❌ Data directory not found: {data_dir}")
         return None
 
-    # Finde alle financial_data JSON Dateien
     financial_files = list(data_path.glob("financial_data_*.json"))
 
     if not financial_files:
         print("❌ No financial data files found")
         return None
 
-    # Nimm die neueste Datei (basierend auf Timestamp im Dateinamen)
     latest_file = max(financial_files, key=lambda x: x.stem)
     return latest_file
 
-
 def main():
-    """Hauptfunktion für Berechnungen gemäß Spezifikation"""
+    """
+    Main process for Step 2: load the latest Step 1 output,
+    compute per-ticker statistics, filter only the three target industries,
+    compute industry aggregations and save results as JSON files.
+    """
     print("=" * 80)
     print("STEP 2: DATA CALCULATIONS (WITH EPS SUPPORT)")
     print("=" * 80)
 
-    # Finde neueste Daten-Datei
+    # Find the most recent financial data file (expects data/ in project root by default)
     data_file = find_latest_financial_data_file()
 
     if not data_file:
@@ -441,10 +571,11 @@ def main():
 
     print(f"📁 Using data file: {data_file.name}")
 
-    # Daten laden
+    # Load the raw data file found by the finder function
     with open(data_file, "r") as f:
         raw_data = json.load(f)
-    with open("data/known_symbols.json", "r") as f:
+    # Load the known_symbols mapping (expects known_symbols.json under data/)
+    with open("../data/known_symbols.json", "r") as f:
         known_symbols = json.load(f)
     print(f"📊 Analysiere {len(raw_data)} Symbole")
 
@@ -455,15 +586,16 @@ def main():
     print("CALCULATIONS PER TICKER")
     print("=" * 80)
 
+    # Iterate over each symbol and compute metrics
     for symbol, symbol_data in raw_data.items():
         print(f"\n🔹 {symbol}:")
         print("-" * 40)
 
-        # Industrie bestimmen
+        # Determine industry using known_symbols mapping
         industry = calculator.determine_industry(symbol, known_symbols)
         print(f"Industry: {industry}")
 
-        # 1. LATEST Price extrahieren
+        # 1) Extract latest price if 'eod' endpoint present
         latest_price = None
         if "eod" in symbol_data:
             latest_price = calculator.extract_latest_price(symbol_data["eod"])
@@ -473,7 +605,7 @@ def main():
         else:
             print("Latest Price: Not available")
 
-        # 2. LAST QUARTER Financials extrahieren (mit EPS)
+        # 2) Extract last quarter revenue, net income and eps
         last_quarter_revenue, last_quarter_net_income, last_quarter_eps = None, None, None
         if "income_statement" in symbol_data:
             last_quarter_revenue, last_quarter_net_income, last_quarter_eps = calculator.extract_last_quarter_financials(
@@ -494,7 +626,7 @@ def main():
         else:
             print("Last Quarter EPS: Not available")
 
-        # 3. EPS Werte extrahieren
+        # 3) Extract EPS variants (TTM, annual, quarterly, diluted) for PE calculation preference
         eps_data = {}
         if "income_statement" in symbol_data:
             eps_data = calculator.extract_eps_values(symbol_data["income_statement"])
@@ -506,7 +638,7 @@ def main():
             if eps_data["eps_quarterly"]:
                 print(f"EPS Quarterly: ${eps_data['eps_quarterly']:.2f}")
 
-        # 4. ANNUAL Net Income extrahieren
+        # 4) Extract annual net income (if present)
         annual_net_income = None
         if "income_statement" in symbol_data:
             annual_net_income = calculator.extract_annual_net_income(symbol_data["income_statement"])
@@ -514,7 +646,7 @@ def main():
         if annual_net_income is not None:
             print(f"Annual Net Income: ${annual_net_income:,.0f}")
 
-        # 5. Revenue Growth berechnen
+        # 5) Revenue growth (current vs previous quarter)
         revenue_q2, revenue_q1 = None, None
         if "income_statement" in symbol_data:
             revenue_q2, revenue_q1 = calculator.extract_revenue_for_growth_calculation(symbol_data["income_statement"])
@@ -524,7 +656,7 @@ def main():
         if revenue_q2 is not None:
             print(f"Current Quarter Revenue (Q-2): ${revenue_q2:,.0f}")
 
-        # 6. LAST YEAR Debt & Equity
+        # 6) Debt and Equity from last year (for Debt Ratio)
         debt, equity = None, None
         if "balance_sheet_statement" in symbol_data:
             debt, equity = calculator.extract_last_year_debt_equity(symbol_data["balance_sheet_statement"])
@@ -534,7 +666,7 @@ def main():
         if equity is not None:
             print(f"Total Equity (last year): ${equity:,.0f}")
 
-        # 7. TTM Net Income (WICHTIG: muss in die Aggregation!)
+        # 7) Net Income TTM extraction (this is required for inclusion in aggregations)
         net_income_ttm = None
         if "income_statement" in symbol_data:
             net_income_ttm = calculator.extract_net_income_ttm(symbol_data["income_statement"])
@@ -542,57 +674,52 @@ def main():
         if net_income_ttm is not None:
             print(f"Net Income TTM: ${net_income_ttm:,.0f}")
 
-        # Berechnungen nach Spezifikation
+        # Now compute the requested metrics per specification
         print("\n📈 CALCULATED METRICS:")
 
-        # 1. PE Ratio: Price-to-Earnings ratio (mit EPS)
+        # PE Ratio initialization and selection of EPS value to use
         pe_ratio = None
         eps_for_pe = None
 
-        # 1. PE Ratio: Price-to-Earnings ratio (mit EPS)
-        pe_ratio = None
-        eps_for_pe = None
-
-        # Priorität 1: EPS TTM verwenden (sicherer Zugriff mit .get())
+        # Priority 1: use EPS TTM if available and non-zero
         if latest_price and eps_data.get("eps_ttm") and eps_data["eps_ttm"] != 0:
             eps_for_pe = eps_data["eps_ttm"]
             pe_ratio = latest_price / eps_for_pe
             print(f"PE Ratio (using EPS TTM): ${latest_price:.2f} / ${eps_for_pe:.2f} = {pe_ratio:.2f}")
 
-        # Priorität 2: EPS Annual verwenden
+        # Priority 2: use EPS Annual
         elif latest_price and eps_data.get("eps_annual") and eps_data["eps_annual"] != 0:
             eps_for_pe = eps_data["eps_annual"]
             pe_ratio = latest_price / eps_for_pe
             print(f"PE Ratio (using EPS Annual): ${latest_price:.2f} / ${eps_for_pe:.2f} = {pe_ratio:.2f}")
 
-        # Priorität 3: Quartals-EPS × 4 für Schätzung
+        # Priority 3: estimate from quarterly EPS * 4
         elif latest_price and last_quarter_eps and last_quarter_eps != 0:
             eps_for_pe = last_quarter_eps * 4
             pe_ratio = latest_price / eps_for_pe
             print(
                 f"PE Ratio (estimated from quarterly EPS): ${latest_price:.2f} / (${last_quarter_eps:.2f} × 4) = {pe_ratio:.2f}")
 
-        # Priorität 4: Annual Net Income verwenden
+        # Priority 4: as a last resort use annual net income (less correct in most contexts)
         elif latest_price and annual_net_income and annual_net_income != 0:
             pe_ratio = latest_price / annual_net_income
             print(
                 f"PE Ratio (using Annual Net Income): ${latest_price:.2f} / ${annual_net_income:,.0f} = {pe_ratio:.2f}")
 
-        # 2. Revenue Growth
+        # Revenue Growth calculation as percent (requires previous quarter revenue)
         revenue_growth = None
         if revenue_q1 and revenue_q2 and revenue_q1 != 0:
             revenue_growth = ((revenue_q2 - revenue_q1) / revenue_q1) * 100
             print(
                 f"Revenue Growth: (${revenue_q2:,.0f} - ${revenue_q1:,.0f}) / ${revenue_q1:,.0f} × 100 = {revenue_growth:.2f}%")
 
-        # 3. NetIncomeTTM - WICHTIG: wird bereits oben extrahiert und muss in die Statistik
-
-        # 4. DebtRatio
+        # Debt Ratio computation (debt / equity)
         debt_ratio = None
         if debt and equity and equity != 0:
             debt_ratio = debt / equity
             print(f"Debt Ratio: ${debt:,.0f} / ${equity:,.0f} = {debt_ratio:.4f}")
 
+        # Print final per-symbol summary (friendly formatting)
         print(f"\n✅ FINAL STATISTICS FOR {symbol}:")
         print(f"   • Latest Price: ${latest_price:,.2f}" if latest_price else "   • Price: Not available")
         print(
@@ -605,13 +732,13 @@ def main():
             f"   • Net Income TTM: ${net_income_ttm:,.0f}" if net_income_ttm else "   • Net Income TTM: Not available")
         print(f"   • Debt Ratio: {debt_ratio:.4f}" if debt_ratio else "   • Debt Ratio: Not available")
 
-        # TickerStatistics erstellen MIT net_income_ttm
+        # Build TickerStatistics dataclass instance for later aggregation
         stats = TickerStatistics(
             symbol=symbol,
             industry=industry,
             pe_ratio=pe_ratio,
             revenue_growth=revenue_growth,
-            net_income_ttm=net_income_ttm,  # WICHTIG: Hier wird es gespeichert
+            net_income_ttm=net_income_ttm,  # ensure this is included
             debt_ratio=debt_ratio,
             revenue=last_quarter_revenue,
             price=latest_price,
@@ -620,7 +747,7 @@ def main():
 
         all_stats.append(stats)
 
-    # Nur Symbole aus den 3 gewünschten Industrien filtern
+    # After collecting all ticker stats, filter to only the three target industries
     print("\n" + "=" * 80)
     print("FILTERING FOR TARGET INDUSTRIES")
     print("=" * 80)
@@ -631,13 +758,13 @@ def main():
     print(f"Symbole vor Filterung: {len(all_stats)}")
     print(f"Symbole nach Filterung ({', '.join(target_industries)}): {len(filtered_stats)}")
 
-    # Zeige gefilterte Symbole
+    # Print the filtered symbol lists per industry (if present) to help debugging / review
     for industry in target_industries:
         industry_symbols = [s.symbol for s in filtered_stats if s.industry == industry]
         if industry_symbols:
             print(f"  {industry}: {len(industry_symbols)} Symbole - {', '.join(industry_symbols)}")
 
-    # Industry Aggregation NUR für die 3 Ziel-Industrien
+    # Compute industry-level aggregations only for the target industries
     print("\n" + "=" * 80)
     print("INDUSTRY AGGREGATION")
     print("=" * 80)
@@ -650,27 +777,28 @@ def main():
 
     industry_results = []
 
+    # For each industry compute averages and sums as required by the challenge
     for industry, stats_list in industries.items():
         print(f"\n📊 {industry} ({len(stats_list)} Ticker):")
 
-        # Durchschnittliche PE Ratio
+        # Average PE Ratio: exclude None and zero values
         pe_ratios = [s.pe_ratio for s in stats_list if s.pe_ratio is not None and s.pe_ratio != 0]
         avg_pe = statistics.mean(pe_ratios) if pe_ratios else None
 
-        # Durchschnittliches Revenue Growth
+        # Average Revenue Growth: exclude None
         revenue_growths = [s.revenue_growth for s in stats_list if s.revenue_growth is not None]
         avg_revenue_growth = statistics.mean(revenue_growths) if revenue_growths else None
 
-        # Summe der Revenues
+        # Sum of Revenues
         revenues = [s.revenue for s in stats_list if s.revenue is not None]
         sum_revenue = sum(revenues) if revenues else None
 
-        # Summe der Net Income TTM (WICHTIG: für Aggregation)
+        # Net Income TTM collection (sum and avg) — included for completeness
         net_incomes_ttm = [s.net_income_ttm for s in stats_list if s.net_income_ttm is not None]
         sum_net_income_ttm = sum(net_incomes_ttm) if net_incomes_ttm else None
         avg_net_income_ttm = statistics.mean(net_incomes_ttm) if net_incomes_ttm else None
 
-        # Zeige Null-EPS Fälle
+        # Warn if EPS was missing for some tickers (affects PE calculation coverage)
         zero_eps_count = sum(1 for s in stats_list if s.eps == 0 or s.eps is None)
         if zero_eps_count > 0:
             print(f"   ⚠️  {zero_eps_count} Ticker haben keinen EPS Wert für PE Berechnung")
@@ -695,6 +823,7 @@ def main():
         if avg_net_income_ttm is not None:
             print(f"   • Average Net Income TTM: ${avg_net_income_ttm:,.0f}")
 
+        # Build aggregation dataclass instance (keeps the structure explicit)
         industry_agg = IndustryAggregation(
             industry=industry,
             avg_pe_ratio=avg_pe,
@@ -705,14 +834,14 @@ def main():
 
         industry_results.append(industry_agg)
 
-    # Ergebnisse speichern
+    # Persist results to JSON files under the data/ folder
     print("\n" + "=" * 80)
     print("SAVING RESULTS")
     print("=" * 80)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # Ticker Statistics (nur gefilterte)
+    # Compose ticker statistics JSON (only filtered tickers)
     ticker_results = []
     for stats in filtered_stats:
         ticker_results.append({
@@ -720,7 +849,7 @@ def main():
             "industry": stats.industry,
             "pe_ratio": stats.pe_ratio,
             "revenue_growth": stats.revenue_growth,
-            "net_income_ttm": stats.net_income_ttm,  # WICHTIG: Hier enthalten
+            "net_income_ttm": stats.net_income_ttm,  # ensure this is included
             "debt_ratio": stats.debt_ratio,
             "revenue": stats.revenue,
             "price": stats.price,
@@ -734,17 +863,23 @@ def main():
                 "quarter_selection": "Finds latest quarter by date"
             }
         })
+    # Allow saving from root or src/ directory
+    output_dir = Path("data")
+    if not output_dir.exists():
+        output_dir = Path("../data")
+    output_dir.mkdir(parents=True, exist_ok=True)
 
-    ticker_filename = f"data/ticker_statistics_{timestamp}.json"
+    ticker_filename = output_dir / f"ticker_statistics_{timestamp}.json"
     with open(ticker_filename, "w") as f:
         json.dump(ticker_results, f, indent=2)
+
     print(f"✅ Ticker Statistics: {ticker_filename}")
     print(f"   Contains {len(ticker_results)} tickers from target industries")
 
-    # Industry Aggregation MIT Net Income TTM Informationen
+    # Build and save industry aggregation JSON (adds Net Income TTM stats per industry)
     industry_results_dict = []
     for agg in industry_results:
-        # Finde zusätzliche Net Income TTM Daten für diese Industrie
+        # Attach Net Income TTM statistics for the industry
         industry_tickers = [s for s in filtered_stats if s.industry == agg.industry]
         net_incomes_ttm = [s.net_income_ttm for s in industry_tickers if s.net_income_ttm is not None]
         sum_net_income_ttm = sum(net_incomes_ttm) if net_incomes_ttm else None
@@ -756,7 +891,7 @@ def main():
             "avg_revenue_growth": agg.avg_revenue_growth,
             "sum_revenue": agg.sum_revenue,
             "ticker_count": agg.ticker_count,
-            "net_income_ttm_stats": {  # WICHTIG: Hier hinzugefügt
+            "net_income_ttm_stats": {  # important: include TTM statistics
                 "sum_net_income_ttm": sum_net_income_ttm,
                 "avg_net_income_ttm": avg_net_income_ttm,
                 "tickers_with_data": len(net_incomes_ttm)
@@ -770,14 +905,14 @@ def main():
         }
         industry_results_dict.append(industry_result)
 
-    industry_filename = f"data/industry_aggregation_{timestamp}.json"
+    industry_filename = output_dir / f"industry_aggregation_{timestamp}.json"
     with open(industry_filename, "w") as f:
         json.dump(industry_results_dict, f, indent=2)
     print(f"✅ Industry Aggregation: {industry_filename}")
     print(f"   Contains {len(industry_results_dict)} industries")
     print(f"   Includes Net Income TTM statistics for each industry")
 
-    # Zusammenfassung
+    # Final summary and next steps
     print("\n" + "=" * 80)
     print("✅ STEP 2 COMPLETED!")
     print("=" * 80)
@@ -786,7 +921,7 @@ def main():
     print(f"Total tickers analyzed: {len(filtered_stats)}")
 
     for agg in industry_results:
-        # Zusätzliche Net Income TTM Daten für die Zusammenfassung
+        # Additional TTM summary per industry
         industry_tickers = [s for s in filtered_stats if s.industry == agg.industry]
         net_incomes_ttm = [s.net_income_ttm for s in industry_tickers if s.net_income_ttm is not None]
         sum_net_income_ttm = sum(net_incomes_ttm) if net_incomes_ttm else None
