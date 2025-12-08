@@ -20,18 +20,28 @@ from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 
-sys.path.append('')  # ensure current working directory is in import path
+# Robust model import for normal execution AND pytest ---
+import sys
+from pathlib import Path
+
+# Determine the folder where THIS file (step3_load.py) is located
+current_file = Path(__file__).resolve()
+src_dir = current_file.parent  # This is the src/ directory
+
+# Ensure src/ directory is in sys.path for imports
+if str(src_dir) not in sys.path:
+    sys.path.insert(0, str(src_dir))
 
 try:
-    # Import SQLAlchemy models (Base and mapped classes).
-    # These classes are expected to be defined without modification in models.py.
     from models import Base, TickerStatistics, IndustryAggregation
     print("✅ Database models imported successfully")
 except ImportError as e:
-    # If importing fails, fail fast with a clear user message.
-    print(f"❌ Error importing database models: {e}")
-    print("Please ensure models.py is in the same folder as this script (src/), or adjust sys.path.")
-    sys.exit(1)
+    # Never use sys.exit() here! It breaks pytest.
+    raise ImportError(
+        f"❌ Could not import models.py: {e}\n"
+        f"Expected models.py to be located in: {src_dir}\n"
+        f"Current sys.path includes: {sys.path}"
+    )
 
 
 class DataStorage:
