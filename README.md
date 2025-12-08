@@ -20,13 +20,28 @@ fiindo-recruitment-challenge/
 │   ├── step1_fetch.py              # Fetches data from Fiindo API
 │   ├── step2_transform.py          # Calculates all statistics
 │   ├── step3_load.py               # Stores data in SQLite DB
+│   ├── speedboost.py               # enable Speedboost
+│   ├── setup_database.py           # Setup Database  
+│   ├── check_database.py           # Checked Database  
 │   ├── models.py                   # SQLAlchemy models
+│
+├── tests/
+│   ├── __init__.py  
+│   ├── test_step1_fetch.py              
+│   ├── test_step2_transform.py              
+│   ├── test_step3_load.py              
+│   ├── run_tests.py                         
 │
 ├── data/                           # JSON input/output data
 ├── db/                             # SQLite database directory
 ├── alembic/                        # Database migrations
+│   ├── versions/  
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako  
 │
 ├── README.md
+├── README_Challenge.md
 ├── requirements.txt
 ├── Dockerfile
 ├── docker-compose.yml
