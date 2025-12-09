@@ -1,0 +1,57 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Service 1: Daten holen
+  step1-fetch:
+    build: .
+    container_name: fiindo-step1
+    command: python src/step1_fetch.py
+    volumes:
+      - ./data:/app/data      # Lokales data/ wird ins Container gemountet
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1    # Sofortige Log-Ausgabe
+    env_file:
+      - .env                  # Lädt .env Datei
+
+  # Service 2: Daten verarbeiten
+  step2-transform:
+    build: .
+    container_name: fiindo-step2
+    command: python src/step2_transform.py
+    volumes:
+      - ./data:/app/data      # Selbes Volume wie step1
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - step1-fetch          # Läuft erst NACH step1
+
+  # Service 3: In Datenbank laden
+  step3-load:
+    build: .
+    container_name: fiindo-step3
+    command: python src/step3_load.py
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db         # Datenbank-Verzeichnis
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    depends_on:
+      - step2-transform      # Läuft erst NACH step2
+
+  # Optional: Datenbank prüfen
+  check-db:
+    build: .
+    container_name: fiindo-check
+    command: python src/check_database.py
+    volumes:
+      - ./db:/app/db
+    depends_on:
+      - step3-load

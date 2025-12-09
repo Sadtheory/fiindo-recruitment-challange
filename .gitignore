@@ -1,1 +1,39 @@
-__pycache__
+# .gitignore for Fiindo Challenge
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# JSON Data Files - ignore ALL .json files in any directory
+**/*.json
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# OS generated files
+.DS_Store
+.DS_Store?
+Thumbs.db
+desktop.ini
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Log files
+*.log
+logs/
+
+# Backup files
+*.bak
+*.backup

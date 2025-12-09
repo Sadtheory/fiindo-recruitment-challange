@@ -1,4 +1,4 @@
-# step3_data_storage.py
+# step3_load.py
 # ---------------------
 # Step 3: Data Storage
 #
@@ -9,7 +9,7 @@
 #  - inserting/updating ticker-level and industry-level records
 #  - providing a small CLI-driven backup and summary
 #
-# Author: Cyn
+# Author: Cynthia Kraft
 # Date: 2025-12-08
 import json
 from pathlib import Path

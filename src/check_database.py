@@ -5,22 +5,23 @@ from tabulate import tabulate
 
 
 def check_database():
-    """Überprüft den Datenbankinhalt"""
+    """Checks and displays the contents of the Fiindo Challenge database."""
 
     print("🔍 Checking database content...")
 
     try:
+        # Connect to the SQLite database file
         conn = sqlite3.connect('../db/fiindo_challenge.db')
         cursor = conn.cursor()
 
-        # 1. Tabellen auflisten
+        # 1. List all tables in the database
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cursor.fetchall()
         print("\n📋 Tables in database:")
         for table in tables:
             print(f"  • {table[0]}")
 
-        # 2. Ticker Statistics anzeigen
+        # 2. Display Ticker Statistics table data
         print("\n📊 TICKER STATISTICS:")
         cursor.execute("""
                        SELECT symbol,
@@ -35,15 +36,17 @@ def check_database():
                        ORDER BY industry, symbol
                        """)
 
+        # Get column names from the query result description
         columns = [description[0] for description in cursor.description]
         rows = cursor.fetchall()
 
         if rows:
+            # Pretty-print the data in a grid format
             print(tabulate(rows, headers=columns, floatfmt=".2f", tablefmt="grid"))
         else:
             print("  No data found")
 
-        # 3. Industry Aggregation anzeigen
+        # 3. Display Industry Aggregation table data
         print("\n🏢 INDUSTRY AGGREGATION:")
         cursor.execute("""
                        SELECT industry,
@@ -63,10 +66,11 @@ def check_database():
         else:
             print("  No data found")
 
-        # 4. Statistische Zusammenfassung
+        # 4. Display statistical summary by industry
         print("\n📈 STATISTICAL SUMMARY:")
 
-        # PE Ratios
+        # PE Ratios statistics grouped by industry
+        # Exclude null values from the calculation
         cursor.execute("""
                        SELECT industry,
                               COUNT(pe_ratio) as count_with_pe,
@@ -86,7 +90,8 @@ def check_database():
                            floatfmt=".2f",
                            tablefmt="grid"))
 
-        # Revenue Growth
+        # Revenue Growth statistics grouped by industry
+        # Exclude null values from the calculation
         cursor.execute("""
                        SELECT industry,
                               COUNT(revenue_growth) as count_with_growth,
@@ -106,6 +111,7 @@ def check_database():
                            floatfmt=".2f",
                            tablefmt="grid"))
 
+        # Close the database connection
         conn.close()
         print("\n✅ Database check completed")
 
