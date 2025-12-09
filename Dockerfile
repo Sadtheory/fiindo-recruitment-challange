@@ -23,5 +23,8 @@ COPY .env .
 # Create directories
 RUN mkdir -p db logs
 
+#
+WORKDIR /app/src
+
 # Set default command
-CMD ["python", "src/step1_fetch.py"]
+CMD ["python", "step1_fetch.py"]

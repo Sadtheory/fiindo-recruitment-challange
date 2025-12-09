@@ -2,6 +2,15 @@
 import subprocess
 import sys
 import os
+import argparse
+
+parser = argparse.ArgumentParser(
+    prog='fiindo_etl_pipeline',
+    description='What the program does',
+    epilog='Text at the bottom of help')
+
+parser.add_argument('--starting_at')
+args = parser.parse_args()
 
 
 def run_command(command, description):
@@ -20,27 +29,27 @@ def run_command(command, description):
 
 
 def main():
+    steps = [
+        lambda: run_command("docker-compose run --rm step1-fetch",
+                            "Step 1: Fetching data from Fiindo API"),
+        lambda: run_command("docker-compose run --rm step2-transform",
+                            "Step 2: Transforming data"),
+        lambda: run_command("docker-compose run --rm step3-load",
+                            "Step 3: Loading data to database"),
+        lambda: run_command("docker-compose run --rm check-db",
+                            "Step 4: Checking database content")
+    ]
+
     print("🚀 Starting Fiindo Data Pipeline")
     print("=" * 50)
 
-    # Step 1: Fetch data
-    if not run_command("docker-compose run --rm fetcher",
-                       "Step 1: Fetching data from Fiindo API"):
-        sys.exit(1)
+    step_index = 0
+    if args.starting_at is not None and args.starting_at.startswith("step"):
+        step_index = int(args.starting_at[4]) - 1
 
-    # Step 2: Transform data
-    if not run_command("docker-compose run --rm transformer",
-                       "Step 2: Transforming data"):
-        sys.exit(1)
-
-    # Step 3: Load to database
-    if not run_command("docker-compose run --rm loader",
-                       "Step 3: Loading data to database"):
-        sys.exit(1)
-
-    # Check database
-    run_command("docker-compose run --rm check-db",
-                "Step 4: Checking database content")
+    for index in range(step_index, 4):
+        if not steps[index]():
+            sys.exit(index + 1)
 
     print("\n" + "=" * 50)
     print("🎉 Pipeline completed successfully!")
