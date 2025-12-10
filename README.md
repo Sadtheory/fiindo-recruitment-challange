@@ -1,238 +1,276 @@
+# Fiindo Recruitment Challenge – ETL Pipeline
 
-# Fiindo Recruitment Challenge – ETL Solution
+## Overview
+This project implements a full ETL (Extract–Transform–Load) workflow for financial market data provided by the **Fiindo API**.  
+The pipeline retrieves raw ticker data, processes financial metrics, aggregates industry-level statistics, and stores everything in a **SQLite database**.
 
-This repository contains my implementation of the **Fiindo Recruitment Challenge**, which requires building a complete ETL (Extract–Transform–Load) workflow:
-
-1. **Fetch** financial data from the Fiindo API  
-2. **Transform & calculate** ticker statistics and industry aggregations  
-3. **Store** processed results into an SQLite database  
-
-The solution is fully structured, documented, and ready for review.
+The repository is structured for:
+- **Docker-first execution** (empfohlen)
+- **Optional local CLI execution** der ETL-Schritte
+- **Full automated unit testing**
+- **Modular ETL pipeline**: Step 1 → Step 2 → Step 3 → Database inspection
 
 ---
 
-# 📂 Project Structure
-
-```
+# 1. Project Structure
+```text
+.
 fiindo-recruitment-challenge/
+├── src/                          # Core pipeline implementation
+│   ├── step1_fetch.py            # Extract: Fetch data from Fiindo API
+│   ├── step2_transform.py        # Transform: Calculate financial metrics
+│   ├── step3_load.py             # Load: Insert data into SQLite
+│   ├── speedboost.py             # Optional: Optimize API requests with speed boost
+│   ├── check_database.py         # Database verification and summary tools
+│   ├── models.py                 # SQLAlchemy ORM models
 │
-├── src/
-│   ├── step1_fetch.py              # Fetches data from Fiindo API
-│   ├── step2_transform.py          # Calculates all statistics
-│   ├── step3_load.py               # Stores data in SQLite DB
-│   ├── speedboost.py               # enable Speedboost
-│   ├── check_database.py           # Checked Database  
-│   ├── models.py                   # SQLAlchemy models
+├── tests/                        # Comprehensive test suite
+│   ├── test_step1_fetch.py       # 23 tests for data extraction
+│   ├── test_step2_transform.py   # 20 tests for data transformation
+│   ├── test_step3_load.py        # 15 tests for database operations
+│   └── run_tests.py              # Single command to run all tests
 │
-├── tests/
-│   ├── __init__.py         
-│   ├── test_step1_fetch.py         # Testing Step1       
-│   ├── test_step2_transform.py     # Testing Step2          
-│   ├── test_step3_load.py          # Testing Step3     
-│   ├── run_tests.py                # Run all 3 Tests         
+├── data/                         # JSON data storage (gitignored)
+├── db/                           # SQLite database files (gitignored)
+├── alembic/                      # Database migration utilities
 │
-├── data/                           # JSON input/output data
-├── db/                             # SQLite database directory
-├── alembic/                        # Database migrations
-│   ├── versions/  
-│   ├── env.py
-│   ├── README
-│   ├── script.py.mako  
-│
-├── README.md
-├── README_Challenge.md
-├── requirements.txt
-├── Dockerfile
-├── docker-compose.yml
-└── .env                            # Contains credentials
+├── Dockerfile                    # Container definition
+├── docker-compose.yml            # Multi-service orchestration
+├── run_pipeline.py               # Main pipeline orchestration script
+├── requirements.txt              # Python dependencies
+├── .env                          # Environment configuration
+├── .gitignore                    # Git exclusion rules
+├── README.md                     # This documentation
+└── README_Challenge.md           # Original challenge requirements
 ```
 
 ---
 
-# 🚀 Features
+# 2. Setup & Installation
 
-### ✔ Fully working ETL pipeline  
-### ✔ Automatic statistics calculation:  
-- PE Ratio  
-- Revenue Growth (quarter vs quarter)  
-- Net Income TTM  
-- Debt-to-Equity Ratio  
+## 2.1 Requirements
+- Python 3.10+
+- pip
+- Docker (optional but recommended)
 
-### ✔ Industry aggregations:  
-- Average PE Ratio  
-- Average Revenue Growth  
-- Total Revenue  
-- Ticker count  
-
-### ✔ SQLite database storage  
-### ✔ SQLAlchemy ORM  
-### ✔ Optional Docker support  
-### ✔ Clear logs & error handling
+Install dependencies:
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-# 🔧 Setup Instructions
+# 3. Running the ETL Pipeline
 
-## 1️⃣ Install Python Dependencies
+# 3.1 Recommended Method: Docker-based Execution
+Docker runs the entire pipeline in isolated containers.
+
+### Build containers
+```bash
+docker compose build
+```
+
+### Run the full pipeline
+```bash
+docker compose up
+```
+
+### Run individual steps (optional)
+```bash
+docker compose run step1-fetch
+docker compose run step2-transform
+docker compose run step3-load
+```
+
+---
+
+# 3.2 Alternative: Running Pipeline Locally (Without Docker)
+
+### Step 1 — Fetch raw financial data
+```bash
+python src/step1_fetch.py
+```
+
+### Step 2 — Transform raw data into statistics
+```bash
+python src/step2_transform.py
+```
+
+### Step 3 — Load data into SQLite
+```bash
+python src/step3_load.py
+```
+
+### Optional: Speed-optimized fetching 
+```bash
+python src/speedboost.py
+```
+
+### View database summary
+```bash
+python src/check_database.py
+```
+
+---
+
+# 4. Running the Pipeline Controller (`run_pipeline.py`)
+
+The pipeline controller orchestrates all steps automatically.
+
+### Run full ETL
+```bash
+python run_pipeline.py
+```
+
+### Start pipeline at a specific point
+This is helpful if, for example, Step 1 has already been executed.
 
 ```bash
-  pip install -r requirements.txt
+python run_pipeline.py --starting_at step2
 ```
+
+Valid values:
+- `step1`
+- `step2`
+- `step3`
 
 ---
 
-## 2️⃣ Create `.env` file
+# 5. Database Structure (SQLite)
 
-Your `.env` must contain:
-
-```
-FIRST_NAME=yourfirstname
-LAST_NAME=yourlastname
-```
-
-Authentication is:
-
-```
-Authorization: Bearer {FIRST_NAME}.{LAST_NAME}
-```
-
----
-
-## 3️⃣ Ensure folders exist
-
-```bash
-  mkdir -p data db
-```
-
----
-
-# ▶️ How to Run the ETL Pipeline
-
-Run **each step in order**:
-
----
-
-## STEP 1 – Fetch API Data
-
-```bash
-  python src/step1_fetch.py
-```
-
-This will:
-
-✔ Authenticate with the Fiindo API  
-✔ Fetch all required financial data  
-✔ Save raw JSON → `data/financial_data_YYYYMMDD_HHMMSS.json`
-
----
-
-## STEP 2 – Transform & Calculate Metrics
-
-```bash
-  python src/step2_transform.py
-```
-
-This will:
-
-✔ Load the latest financial data  
-✔ Calculate all ticker-level statistics  
-✔ Calculate industry-level aggregations  
-✔ Save results into:
-
-```
-data/ticker_statistics_*.json
-data/industry_aggregation_*.json
-```
-
----
-
-## STEP 3 – Store Data in SQLite Database
-
-```bash
-  python src/step3_load.py
-```
-
-This will:
-
-✔ Create database (if not exists)  
-✔ Populate ticker_statistics table  
-✔ Populate industry_aggregation table  
-✔ Display database summary  
-✔ Optionally create a DB backup  
-
-Database file:
+The database is located at:
 
 ```
 db/fiindo_challenge.db
 ```
 
+The pipeline generates three tables:
+
 ---
 
-# 🐳 Running with Docker (Optional)
+## 5.1 ticker_statistics
+Contains calculated financial figures for individual stocks.
 
-## Build the container:
+| Column             | Description |
+|-------------------|-------------|
+| symbol            | Ticker Symbol |
+| name              | Full company name |
+| industry          | Industry group |
+| pe_ratio          | Price-to-Earnings (last quarter) |
+| revenue_growth    | Q/Q Revenue Growth (%) |
+| net_income_ttm    | Trailing Twelve Months Net Income |
+| debt_ratio        | Debt-to-Equity (last year) |
+| price             | Latest available stock price |
+| revenue_current   | Latest revenue value |
+| last_updated      | Timestamp |
+| is_active         | Boolean flag |
+
+---
+
+## 5.2 industry_aggregation
+Aggregated key figures across all tickers per industry.
+
+| Column                | Description |
+|-----------------------|-------------|
+| industry             | Industry Name |
+| avg_pe_ratio         | Mean PE Ratio |
+| avg_revenue_growth   | Mean Rev. Growth |
+| sum_revenue          | Total revenue |
+| ticker_count         | Number of tickers in this industry |
+| last_updated         | Timestamp |
+
+---
+
+## 5.3 alembic_version
+Migration tables managed by Alembic.
+
+---
+
+# 6. Example Output (from check_database.py)
+
+### Ticker Examples
+```
+symbol   industry               PE     Growth   NetIncome     DebtRatio
+0Q1F.L   Banks - Diversified    14.31   1.46    56533000000   1.32
+XM.US    Software - Application -10.55 -71.91   -1028117000   0.15
+ZI.US    Software - Application 36.15   0.33    89200000      0.82
+```
+
+### Industry Aggregation Example
+```
+Banks - Diversified:
+  Count: 66
+  Avg PE: 62.51
+  Avg Growth: 46.13%
+  Sum Revenue: 1.44T
+```
+
+---
+
+# 7. Unit Testing
+
+All tests can be performed using a single script:
 
 ```bash
-  docker build -t fiindo-etl .
+python tests/run_tests.py
 ```
 
-## Run with docker-compose:
+### Test Coverage:
 
-```bash
-  docker-compose up --build
-```
+| Area   | Tests                 |
+|--------|-----------------------|
+| Step 1 | 23 Tests              |
+| Step 2 | 20 Tests              |
+| Step 3 | 15 Tests              |
+| Total  | 58 Tests – all passed |
 
-This will:
+The tests check, among other things:
 
-✔ Install dependencies  
-✔ Run the ETL pipeline  
-✔ Persist data in mounted volumes  
+- API Header Logik  
+- Extraction Edge Cases  
+- All Metric Calculations  
+- JSON Loading  
+- Database Inserts & Aggregations  
+- Pipeline Integration  
 
 ---
 
-# 🧪 (Bonus) Unit Tests
+# 8. Environment Variables
+Set in `.env`:
 
-Run tests:
-
-```bash
-  pytest -v
+```
+FIINDO_FIRST_NAME=John
+FIINDO_LAST_NAME=Doe
 ```
 
-The tests cover:
-
-- ETL steps  
-- Transform logic  
-- Database storage utilities  
-
----
-
-# 📊 How to Inspect the Database
-
-Open SQLite:
-
-```bash
-  sqlite3 db/fiindo_challenge.db
+Used for API authentication:
 ```
-
-Useful commands:
-
-```sql
-.tables
-SELECT * FROM ticker_statistics LIMIT 5;
-SELECT * FROM industry_aggregation;
+Authorization: Bearer {first}.{last}
 ```
 
 ---
 
-# 📝 Notes
+# 9. Troubleshooting
 
-- Only tickers from these industries are processed:  
-  - Banks – Diversified  
-  - Software – Application  
-  - Consumer Electronics  
-- All other industries are ignored (per challenge specification).  
-- All paths are configured to work whether executed from project root or `/src`.
+### Data directory missing
+→ Step 1 not executed  
+→  Or folder structure not present
+
+### Models not found
+→ Make sure that `src/` is used as the working directory.
+
+### API returns no symbols
+→ Possibly incorrect authorization header
 
 ---
 
-If you have any questions, feel free to ask!
+# 10. License
+This project is part of a technical application task.
+
+Please use for private purposes only.
+
+
+---
+
+**Thank you for reviewing this challenge solution.**  
+For any questions, feel free to reach out.  

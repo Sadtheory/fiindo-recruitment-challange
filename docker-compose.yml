@@ -1,39 +1,46 @@
 # docker-compose.yml
 
 services:
-  # Service 1: Daten holen
+  # Service 1: Data fetching - retrieves data from Fiindo API
   step1-fetch:
-    working_dir: /app/src
-    build: .
-    container_name: fiindo-step1
-    command: python step1_fetch.py
+    working_dir: /app/src  # Working directory inside container
+    build: .  # Build image from current directory's Dockerfile
+    container_name: fiindo-step1  # Custom container name
+    command: python step1_fetch.py  # Command to execute
     volumes:
-      - ./data:/app/data      # Lokales data/ wird ins Container gemountet
+      # Mount local ./data directory to /app/data in container
+      - ./data:/app/data
+      # Mount local ./logs directory for log persistence
       - ./logs:/app/logs
     environment:
+      # Environment variables for authentication
       FIRST_NAME: ${FIRST_NAME}
       LAST_NAME: ${LAST_NAME}
-      PYTHONUNBUFFERED: 1    # Sofortige Log-Ausgabe
+      # Enable unbuffered Python output for immediate log visibility
+      PYTHONUNBUFFERED: 1
     env_file:
-      - .env                  # Lädt .env Datei
+      # Load environment variables from .env file
+      - .env
 
-  # Service 2: Daten verarbeiten
+  # Service 2: Data transformation - processes raw data
   step2-transform:
     working_dir: /app/src
     build: .
     container_name: fiindo-step2
     command: python step2_transform.py
     volumes:
-      - ./data:/app/data      # Selbes Volume wie step1
+      # Share same data volume as step1-fetch
+      - ./data:/app/data
       - ./logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
     env_file:
       - .env
     depends_on:
-      - step1-fetch          # Läuft erst NACH step1
+      # Ensure step1 completes before starting step2
+      - step1-fetch
 
-  # Service 3: In Datenbank laden
+  # Service 3: Database loading - stores data in SQLite database
   step3-load:
     working_dir: /app/src
     build: .
@@ -41,22 +48,26 @@ services:
     command: python step3_load.py
     volumes:
       - ./data:/app/data
-      - ./db:/app/db         # Datenbank-Verzeichnis
+      # Mount local ./db directory for database persistence
+      - ./db:/app/db
       - ./logs:/app/logs
     environment:
       - PYTHONUNBUFFERED=1
     env_file:
       - .env
     depends_on:
-      - step2-transform      # Läuft erst NACH step2
+      # Ensure step2 completes before starting step3
+      - step2-transform
 
-  # Optional: Datenbank prüfen
+  # Service 4: Database checking - verifies and displays database content
   check-db:
     working_dir: /app/src
     build: .
     container_name: fiindo-check
     command: python check_database.py
     volumes:
+      # Access database created by step3-load
       - ./db:/app/db
     depends_on:
+      # Ensure database exists before checking
       - step3-load
